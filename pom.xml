@@ -92,6 +92,8 @@
       <plugin>
     <artifactId>maven-assembly-plugin</artifactId>
     <configuration>
+        <finalName>clientDNS-${project.version}.jar</finalName>
+        <appendAssemblyId>false</appendAssemblyId>
         <archive>
             <manifest>                 
                 <mainClass>application.App</mainClass>
@@ -124,34 +126,7 @@
              </executions>
          </plugin>
 
-         <plugin>
-             <artifactId>maven-antrun-plugin</artifactId>
-             <version>3.0.0</version>
-             <executions>
-                 <execution>
-                     <phase>
-                         generate-sources
-                     </phase>
-                     <configuration>
-                         <target>
-                             <mkdir dir="${basedir}/target/clientDNS" />
-                             <copy todir="${basedir}/target/clientDNS">
-                                 <fileset dir="${basedir}" includes="config.properties" />
-                                 <fileset dir="${basedir}" includes="rootservers.txt" />
-                                 <fileset dir="${basedir}" includes="servers.json" />
-                             </copy>
-                             <zip destfile="${basedir}/target/clientDNS.zip"
-                                  basedir="${basedir}/target/clientDNS"/>
-                         </target>
-                     </configuration>
-                     <goals>
-                         <goal>run</goal>
-                     </goals>
-                 </execution>
-             </executions>
-         </plugin>
-
-         <plugin>
+	     <plugin>
              <groupId>com.akathist.maven.plugins.launch4j</groupId>
              <artifactId>launch4j-maven-plugin</artifactId>
              <executions>
@@ -163,8 +138,8 @@
                      </goals>
                      <configuration>
                          <headerType>gui</headerType>
-                         <jar>target/clientDNS-1.1.0-shaded.jar</jar>
-                         <outfile>target/clientDNS/clientDNS-1.1.0.exe</outfile>
+                         <jar>target/clientDNS-${project.version}-shaded.jar</jar>
+                         <outfile>target/clientDNS/clientDNS.exe</outfile>
                          <downloadUrl>http://java.com/download</downloadUrl>
                          <classPath>
                              <mainClass>application.Main</mainClass>
@@ -192,8 +167,31 @@
                      </configuration>
                  </execution>
              </executions>
+         </plugin>	     
+         <plugin>
+             <artifactId>maven-antrun-plugin</artifactId>
+             <version>3.0.0</version>
+             <executions>
+                 <execution>
+                     <phase>
+                         package
+                     </phase>
+                     <configuration>
+                         <target>
+                             <mkdir dir="${basedir}\target\clientDNS" />
+                             <copy todir="${basedir}\target\clientDNS">
+                                 <fileset dir="${basedir}" includes="config.properties" />
+                                 <fileset dir="${basedir}" includes="rootservers.txt" />
+                                 <fileset dir="${basedir}" includes="servers.json" />
+                             </copy> 
+                         </target>
+                     </configuration>
+                     <goals>
+                         <goal>run</goal>
+                     </goals>
+                 </execution>
+             </executions>
          </plugin>
-
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
         <version>3.7.0</version>
