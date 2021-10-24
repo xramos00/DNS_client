@@ -3,8 +3,6 @@ name: Pre-release DNS klienta
 on:
   push:
     branches: [ main ]
-  pull_request:
-    branches: [ main ]
 
 jobs:
   build:
