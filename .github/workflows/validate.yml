@@ -2,7 +2,8 @@ name: Kontrolná kompilácia DNS klienta
 
 on:
   push:
-    branches: [ "!main" ]
+    branches-ignore:
+      - main
     
 jobs:
   build:
