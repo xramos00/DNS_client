@@ -501,7 +501,13 @@ public abstract class DNSTaskBase extends Task<Void> {
 			size += r.getSize();
 		}
 	}
-	
+
+	/**
+	 * Method checks if parameter domain ends with <b>.</b>, thus it is considered as fully qualified domain name
+	 * and trailing <b>.</b> is removed.
+	 * @param domain contains domain name string which can be trailed with <b>.</b>
+	 * @return string that is not ended with <b>.</b>
+	 */
 	private String checkAndStripFullyQualifyName(String domain) {
 		if (domain.endsWith(".")) {
 			return domain.substring(0, domain.length() - 1);
@@ -509,7 +515,10 @@ public abstract class DNSTaskBase extends Task<Void> {
 			return domain;
 		}
 	}
-	
+
+	/**
+	 * Method converts DNS request query to bytes, so it can be sent via TCP or UDP socket
+	 */
 	protected void messageToBytes() {
 		int curentIndex = 0;
 		if (rrRecords) {
@@ -547,7 +556,11 @@ public abstract class DNSTaskBase extends Task<Void> {
 		byteSizeQuery = messageAsBytes.length;
 
 	}
-	
+
+	/**
+	 * Method returns DNS response in form of TreeItem which can be used do display response in TreeView
+	 * @return Response in form of tree consisting of TreeItem objects
+	 */
 	public TreeItem<String> getAsTreeItem() {
 		root = new TreeItem<String>(KEY_REQUEST);
 		root.getChildren().add(header.getAsTreeItem());
@@ -606,6 +619,7 @@ public abstract class DNSTaskBase extends Task<Void> {
 		// store request and response as TreeItem<String> so it can be passed to GUI
 		setResponse(parser.getAsTreeItem());
 		setRequest(getAsTreeItem());
+		setByteSizeResponse(parser.getByteSizeResponse());
 
 		// update UI with results
 		updateResultUI();
@@ -614,11 +628,14 @@ public abstract class DNSTaskBase extends Task<Void> {
 
 	}
 
+	/**
+	 * Method used to calculate duration of DNS request
+	 * @return Duration of DNS request
+	 */
 	protected double calculateDuration()
 	{
 		double h = (getStopTime() - getStartTime()) / 1000000.00;
 		h = Math.round(h * 100) / 100.0;
-		// store data about duration and count of messages
 		return h;
 	}
 

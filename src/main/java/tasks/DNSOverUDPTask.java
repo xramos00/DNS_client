@@ -51,7 +51,6 @@ public class DNSOverUDPTask extends DNSTaskBase{
 
                 setStopTime(System.nanoTime());
                 datagramSocket.close();
-                setByteSizeResponse(getRecieveReply().length);
                 run = false;
             } catch (SocketTimeoutException | SocketException e) {
                 LOGGER.warning("Time out for the: " + (getMessagesSent() + 1) + " message");
