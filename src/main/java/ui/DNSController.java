@@ -1,24 +1,9 @@
 package ui;
 
-import java.io.IOException;
-import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.logging.Logger;
-
 import application.App;
 import application.Config;
-import enums.APPLICATION_PROTOCOL;
-import enums.IP_PROTOCOL;
-import enums.Q_COUNT;
-import enums.TRANSPORT_PROTOCOL;
-import enums.WIRESHARK_FILTER;
-import exceptions.DnsServerIpIsNotValidException;
-import exceptions.MoreRecordsTypesWithPTRException;
-import exceptions.NonRecordSelectedException;
-import exceptions.NotValidDomainNameException;
-import exceptions.NotValidIPException;
+import enums.*;
+import exceptions.*;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.fxml.FXML;
@@ -41,9 +26,16 @@ import javafx.stage.Stage;
 import models.DomainConvert;
 import models.Ip;
 import models.NameServer;
+import models.WiresharkFilter;
 import tasks.DNSOverTCPTask;
 import tasks.DNSOverUDPTask;
 import tasks.DNSTaskBase;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.logging.Logger;
 
 public class DNSController extends GeneralController
 {
@@ -52,31 +44,58 @@ public class DNSController extends GeneralController
     public static final String FXML_FILE_NAME_LARGE = "/fxml/DNS_small.fxml";
 
     public static boolean layoutLarge = true;
-
+    @FXML
+    protected Label wiresharkLabel;
+    @FXML
+    protected RadioButton dnssecYesRadioButton;
+    @FXML
+    protected RadioButton dnssecNoRadioButton;
+    // menu items
+    @FXML
+    protected MenuItem deleteDomainNameHistory;
+    @FXML
+    protected RadioMenuItem justIp;
+    @FXML
+    protected RadioMenuItem ipAsFilter;
+    @FXML
+    protected RadioMenuItem ipwithTCPAsFilter;
+    @FXML
+    protected CheckBox nsec3CheckBox;
+    @FXML
+    protected GridPane dnsServerGridPane;
+    @FXML
+    protected VBox rootServersVBox;
+    @FXML
+    protected VBox leftRootServersVBox;
+    @FXML
+    protected VBox rightRootServersVBox;
+    @FXML
+    protected VBox otherDNSVbox;
+    @FXML
+    protected TitledPane dnsServerTitledPane;
+    @FXML
+    protected TitledPane iterativeTitledPane;
+    protected ToggleGroup otherDNSToggleGroup;
+    protected ToggleGroup dnssecToggleGroup;
+    @FXML
+    protected ImageView cloudflareIpv4ImageView;
+    @FXML
+    protected ImageView googleIpv4IamgeView;
+    @FXML
+    CheckBox DNSSECOkCheckBox;
+    @FXML
+    CheckBox authenticateDataCheckBox;
+    @FXML
+    CheckBox checkingDisabledCheckBox;
     @FXML
     private VBox vboxRoot;
-
     // text fields
     @FXML
     private TextField dnsServerTextField;
     @FXML
     private ComboBox<String> dnsServerComboBox;
-
     @FXML
     private TitledPane DNSSECTitledPane;
-
-    @FXML
-    CheckBox DNSSECOkCheckBox;
-
-    @FXML
-    CheckBox authenticateDataCheckBox;
-
-    @FXML
-    CheckBox checkingDisabledCheckBox;
-
-    @FXML
-    protected Label wiresharkLabel;
-
     // radio buttons
     @FXML
     private RadioButton tcpRadioButton;
@@ -86,78 +105,24 @@ public class DNSController extends GeneralController
     private RadioButton recursiveQueryRadioButton;
     @FXML
     private RadioButton iterativeQueryRadioButton;
-
-    @FXML
-    private RadioButton IPv4RadioButton;
-    @FXML
-    private RadioButton IPv6RadioButton;
-
-    @FXML
-    protected RadioButton dnssecYesRadioButton;
-    @FXML
-    protected RadioButton dnssecNoRadioButton;
-    // menu items
-    @FXML
-    protected MenuItem deleteDomainNameHistory;
     @FXML
     private MenuItem deleteDNSServersHistory;
-
-
-    @FXML
-    protected RadioMenuItem justIp;
-    @FXML
-    protected RadioMenuItem ipAsFilter;
     @FXML
     private RadioMenuItem ipWithUDPAsFilter;
     @FXML
-    protected RadioMenuItem ipwithTCPAsFilter;
-    @FXML
     private RadioMenuItem ipWithUDPandTcpAsFilter;
-    @FXML
-    protected CheckBox nsec3CheckBox;
-
-    @FXML
-    protected GridPane dnsServerGridPane;
-
-    @FXML
-    protected VBox rootServersVBox;
-
-    @FXML
-    protected VBox leftRootServersVBox;
-
-    @FXML
-    protected VBox rightRootServersVBox;
-
-    @FXML
-    protected VBox otherDNSVbox;
-
     // titledpane
     @FXML
     private TitledPane transportTitledPane;
-    @FXML
-    protected TitledPane dnsServerTitledPane;
-    @FXML
-    protected TitledPane iterativeTitledPane;
-
     // toogleGroup
     // toogleGroup
     private ToggleGroup transportToggleGroup;
     private ToggleGroup iterativeToggleGroup;
-    protected ToggleGroup dnsserverToggleGroup;
-    protected ToggleGroup otherDNSToggleGroup;
-    protected ToggleGroup wiresharkFilterToogleGroup;
-    protected ToggleGroup dnssecToggleGroup;
-    protected ToggleGroup IPprotToggleGroup;
-
     // choice box
     @FXML
     private ComboBox<String> savedDNSChoiceBox;
     @FXML
     private ProgressBar progressBar;
-    @FXML
-    protected ImageView cloudflareIpv4ImageView;
-    @FXML
-    protected ImageView googleIpv4IamgeView;
     @FXML
     private ImageView cznicIpv4RadioIamgeView;
     @FXML
@@ -184,6 +149,13 @@ public class DNSController extends GeneralController
 
     }
 
+    @Override
+    protected void updateCustomParameters()
+    {
+        parameters.put(WiresharkFilter.Parameters.TCPPORT,"53");
+        parameters.put(WiresharkFilter.Parameters.UDPPORT,"53");
+    }
+
     public void initialize()
     {
 
@@ -197,9 +169,6 @@ public class DNSController extends GeneralController
         recursiveQueryRadioButton.setToggleGroup(iterativeToggleGroup);
 
         dnssecToggleGroup = new ToggleGroup();
-
-        //dnssecYesRadioButton.setToggleGroup(dnssecToggleGroup);
-        //dnssecNoRadioButton.setToggleGroup(dnssecToggleGroup);
 
         IPprotToggleGroup = new ToggleGroup();
 
@@ -233,7 +202,7 @@ public class DNSController extends GeneralController
                 ip.getIpv6DnsServer()));
         for (NameServer ns : Config.getNameServers())
         {
-            otherDNSVbox.getChildren().add(new NameServerVBox(ns, dnsserverToggleGroup));
+            otherDNSVbox.getChildren().add(new NameServerVBox(ns, dnsserverToggleGroup, this));
         }
 
         HBox customDNS = new HBox();
@@ -252,11 +221,6 @@ public class DNSController extends GeneralController
         otherDNSVbox.getChildren().add(customDNS);
 
         wiresharkFilterToogleGroup = new ToggleGroup();
-        justIp.setToggleGroup(wiresharkFilterToogleGroup);
-        ipAsFilter.setToggleGroup(wiresharkFilterToogleGroup);
-        ipWithUDPAsFilter.setToggleGroup(wiresharkFilterToogleGroup);
-        ipwithTCPAsFilter.setToggleGroup(wiresharkFilterToogleGroup);
-        ipWithUDPandTcpAsFilter.setToggleGroup(wiresharkFilterToogleGroup);
 
         // hide root tree item in tree view, so it is expanded after receiving response
         requestTreeView.setShowRoot(false);
@@ -275,6 +239,7 @@ public class DNSController extends GeneralController
             }
         });
 
+        setWiresharkMenuItems();
 
     }
 
@@ -288,7 +253,6 @@ public class DNSController extends GeneralController
     {
         setKeyboardShortcuts();
         setUserDataTransportProtocol();
-        setUserDataWiresharkRadioMenuItem();
         setUserDataRecords();
         setUserDataIPRadioButtons();
     }
@@ -313,15 +277,6 @@ public class DNSController extends GeneralController
     {
         IPv4RadioButton.setUserData(IP_PROTOCOL.IPv4);
         IPv6RadioButton.setUserData(IP_PROTOCOL.IPv6);
-    }
-
-    private void setUserDataWiresharkRadioMenuItem()
-    {
-        justIp.setUserData(WIRESHARK_FILTER.JUST_IP);
-        ipAsFilter.setUserData(WIRESHARK_FILTER.IP_FILTER);
-        ipWithUDPAsFilter.setUserData(WIRESHARK_FILTER.IP_WITH_UDP);
-        ipwithTCPAsFilter.setUserData(WIRESHARK_FILTER.IP_WITH_TCP);
-        ipWithUDPandTcpAsFilter.setUserData(WIRESHARK_FILTER.IP_WITH_UDP_AND_TCP);
     }
 
     private void setUserDataTransportProtocol()
@@ -372,48 +327,6 @@ public class DNSController extends GeneralController
         {
             dnsserverToggleGroup.getSelectedToggle().setSelected(false);
         }
-    }
-
-    private String getDnsServerIp() throws DnsServerIpIsNotValidException, UnknownHostException
-    {
-
-        Toggle selected = dnsserverToggleGroup.getSelectedToggle();
-
-        if (selected == null)
-        {
-            return null;
-        }
-
-        Object userDataObject = selected.getUserData();
-
-        String serverIp = null;
-
-        if (userDataObject == null)
-        {
-            return null;
-        }
-
-        if (userDataObject instanceof String)
-        {
-            serverIp = (String) userDataObject;
-        } else if (userDataObject instanceof NameServer)
-        {
-            serverIp = IPv4RadioButton.isSelected() ?
-                    ((NameServer) userDataObject).getIPv4Addr().get(0) :
-                    ((NameServer) userDataObject).getIPv6Addr().get(0);
-        } else if (userDataObject instanceof ToggleGroup)
-        {
-            ToggleGroup group = (ToggleGroup) userDataObject;
-            Toggle selectedAddress = group.getSelectedToggle();
-            serverIp = (String) selectedAddress.getUserData();
-        } else if (userDataObject instanceof TextField)
-        {
-            TextField input = (TextField) userDataObject;
-            serverIp = input.getText();
-        }
-
-        return serverIp;
-
     }
 
     @FXML
@@ -632,6 +545,7 @@ public class DNSController extends GeneralController
         }
 
     }
+
 
     @FXML
     private void onDnsServerNameChoiseBoxAction(ActionEvent event)

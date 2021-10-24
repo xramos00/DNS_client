@@ -1,204 +1,381 @@
 package ui;
 
-import java.net.NetworkInterface;
-import java.net.SocketException;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.logging.Logger;
-
+import exceptions.DnsServerIpIsNotValidException;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.ClipboardContent;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import models.Ip;
-import models.Language;
-import models.Settings;
+import models.*;
 
-public abstract class GeneralController {
+import java.net.NetworkInterface;
+import java.net.SocketException;
+import java.net.UnknownHostException;
+import java.util.*;
+import java.util.logging.Logger;
 
-	protected Language language;
-	public static String APP_TITTLE = "title";
-	public String PROTOCOL = "DNS";
-	protected Settings settings;
-	protected Logger LOGGER;
-	protected Ip ipDns;
+public abstract class GeneralController
+{
 
-	@FXML
-	protected Button sendButton;
+    public static String APP_TITTLE = "title";
+    public String PROTOCOL = "DNS";
+    protected Language language;
+    protected Settings settings;
+    protected Logger LOGGER;
+    protected Ip ipDns;
 
-	@FXML
-	protected TreeView requestTreeView;
+    protected ToggleGroup wiresharkFilterToogleGroup;
+    protected List<WiresharkFilter> filters;
 
-	@FXML
-	protected TreeView responseTreeView;
+    protected Map<String, String> parameters;
+    protected ToggleGroup IPprotToggleGroup;
+    protected ToggleGroup dnsserverToggleGroup;
 
-	@FXML
-	protected TextField domainNameTextField;
+    @FXML
+    protected Menu wiresharkMenu;
 
+    @FXML
+    protected Button sendButton;
 
-	@FXML
-	protected CheckBox aCheckBox = new CheckBox();
+    @FXML
+    protected TreeView requestTreeView;
 
-	@FXML
-	CheckBox aaaaCheckBox = new CheckBox();
+    @FXML
+    protected TreeView responseTreeView;
 
-	@FXML
-	CheckBox ptrCheckBox = new CheckBox();
+    @FXML
+    protected TextField domainNameTextField;
 
-	@FXML
-	CheckBox txtCheckBox = new CheckBox();
+    @FXML
+    protected RadioButton IPv4RadioButton;
+    @FXML
+    protected RadioButton IPv6RadioButton;
 
-	@FXML
-	CheckBox nsecCheckBox = new CheckBox();
+    @FXML
+    protected CheckBox aCheckBox = new CheckBox();
+    @FXML
+    protected Label responseTimeLabel;
+    @FXML
+    protected Label responseTimeValueLabel;
+    @FXML
+    protected Label numberOfMessagesLabel;
+    @FXML
+    protected Label numberOfMessagesValueLabel;
+    @FXML
+    protected Menu interfaceMenu;
+    protected ToggleGroup interfaceToggleGroup;
+    @FXML
+    CheckBox aaaaCheckBox = new CheckBox();
+    @FXML
+    CheckBox ptrCheckBox = new CheckBox();
+    @FXML
+    CheckBox txtCheckBox = new CheckBox();
+    @FXML
+    CheckBox nsecCheckBox = new CheckBox();
+    @FXML
+    CheckBox anyCheckBox = new CheckBox();
+    @FXML
+    CheckBox soaCheckBox = new CheckBox();
+    @FXML
+    CheckBox dnskeyCheckBox = new CheckBox();
+    @FXML
+    CheckBox dsCheckBox = new CheckBox();
+    @FXML
+    CheckBox caaCheckBox = new CheckBox();
+    @FXML
+    CheckBox cnameCheckBox = new CheckBox();
+    @FXML
+    CheckBox nsCheckBox = new CheckBox();
+    @FXML
+    CheckBox mxCheckBox = new CheckBox();
+    @FXML
+    CheckBox rrsigCheckBox = new CheckBox();
+    @FXML
+    CheckBox holdConectionCheckbox = new CheckBox();
+    @FXML
+    CheckBox nsec3paramCheckBox = new CheckBox();
+    @FXML
+    CheckBox dnssecRecordsRequestCheckBox = new CheckBox();
+    @FXML
+    Label querySizeLabel;
+    @FXML
+    Label responseSizeLabel;
 
-	@FXML
-	CheckBox anyCheckBox = new CheckBox();
+    public GeneralController() {}
 
-	@FXML
-	CheckBox soaCheckBox = new CheckBox();
+    /**
+     * Method creates basic wireshark filters and respective buttons in menu
+     */
+    protected void setWiresharkMenuItems()
+    {
+        parameters = new HashMap<String, String>();
+        parameters.put("prefix", "ipv4");
+        parameters.put("ip", null);
+        parameters.put("tcpPort", null);
+        parameters.put("udpPort", null);
 
-	@FXML
-	CheckBox dnskeyCheckBox = new CheckBox();
+        filters = new LinkedList<>();
+        filters.add(new WiresharkFilter("IP", "${ip}"));
+        filters.add(new WiresharkFilter("IP filter", "${prefix}.addr == ${ip}"));
+        filters.add(new WiresharkFilter("IP & UDP", "${prefix}.addr == ${ip} && udp.port == ${udpPort}"));
+        filters.add(new WiresharkFilter("IP & TCP", "${prefix}.addr == ${ip} && tcp.port == ${tcpPort}"));
+        filters.add(new WiresharkFilter("IP & TCP & UDP", "${prefix}.addr == ${ip} && (tcp.port == ${tcpPort} || udp" +
+                ".port == ${udpPort})"));
 
-	@FXML
-	CheckBox dsCheckBox = new CheckBox();
+        for (WiresharkFilter filter : filters)
+        {
+            RadioMenuItem menuItem = new RadioMenuItem(filter.getName());
+            menuItem.setUserData(filter);
+            menuItem.setToggleGroup(wiresharkFilterToogleGroup);
+            wiresharkMenu.getItems().add(menuItem);
+        }
+    }
 
-	@FXML
-	CheckBox caaCheckBox = new CheckBox();
+    /**
+     * Method is called when user wants to copy wireshark filter and is intended to supply specific parameters to
+     * specific filters
+     */
+    abstract protected void updateCustomParameters();
 
-	@FXML
-	CheckBox cnameCheckBox = new CheckBox();
+    public Settings getSettings()
+    {
+        return settings;
+    }
 
-	@FXML
-	CheckBox nsCheckBox = new CheckBox();
+    public void setSettings(Settings settings)
+    {
+        this.settings = settings;
+    }
 
-	@FXML
-	CheckBox mxCheckBox = new CheckBox();
+    public void setIpDns(Ip ip)
+    {
+        this.ipDns = ip;
+    }
 
-	@FXML
-	CheckBox rrsigCheckBox = new CheckBox();
+    public Language getLanguage()
+    {
+        return language;
+    }
 
-	@FXML
-	CheckBox holdConectionCheckbox = new CheckBox();
+    public void setLanguage(Language language)
+    {
+        this.language = language;
+        // System.out.println("Language loads to another window");
+    }
 
-	@FXML
-	CheckBox nsec3paramCheckBox = new CheckBox();
+    public String getTitle()
+    {
+        String client = language.getLanguageBundle().getString("title");
+        String protocol = getProtocol();
+        return client + " " + protocol;
+    }
 
-	@FXML
-	CheckBox dnssecRecordsRequestCheckBox = new CheckBox();
+    public abstract String getProtocol();
 
-	@FXML
-	Label querySizeLabel;
+    public void setLabels()
+    {
+        // To be overridden
+    }
 
-	@FXML
-	Label responseSizeLabel;
+    public void loadDataFromSettings()
+    {
+        // to be overridden
+    }
 
-	@FXML
-	protected Label responseTimeLabel;
-	@FXML
-	protected Label responseTimeValueLabel;
-	@FXML
-	protected Label numberOfMessagesLabel;
-	@FXML
-	protected Label numberOfMessagesValueLabel;
+    public void networkInterfaces()
+    {
+        try
+        {
+            interfaceToggleGroup = new ToggleGroup();
+            Enumeration<NetworkInterface> e = NetworkInterface.getNetworkInterfaces();
+            ArrayList<RadioMenuItem> listMenuItems = new ArrayList<RadioMenuItem>();
+            while (e.hasMoreElements())
+            {
+                RadioMenuItem pom = new RadioMenuItem();
+                NetworkInterface ni = e.nextElement();
+                if (ni.getName().equals(settings.getInterface().getName()))
+                {
+                    pom.setSelected(true);
+                }
+                pom.setText(ni.getName() + " -- " + ni.getDisplayName());
+                pom.setUserData(ni);
+                pom.setToggleGroup(interfaceToggleGroup);
+                listMenuItems.add(pom);
+            }
+            interfaceMenu.getItems().addAll(listMenuItems);
+        } catch (SocketException e)
+        {
+            e.printStackTrace();
+        }
+    }
 
-	@FXML
-	protected Menu interfaceMenu;
+    /**
+     * Method returns selected network interface, which can be used to send data into network
+     *
+     * @return
+     */
+    protected NetworkInterface getInterface()
+    {
+        NetworkInterface netInterface = (NetworkInterface) interfaceToggleGroup.getSelectedToggle().getUserData();
+        LOGGER.info(netInterface.getDisplayName().toString() + " " + netInterface.getName());
+        settings.setInterface(netInterface);
+        return netInterface;
+    }
 
-	protected ToggleGroup interfaceToggleGroup;
+    /**
+     * Method creates Modal window containing translated message for user
+     *
+     * @param exceptionName name of property containing desired message
+     */
+    protected void showAller(String exceptionName)
+    {
+        Alert alert = new Alert(Alert.AlertType.ERROR, language.getLanguageBundle().getString(exceptionName));
+        alert.initModality(Modality.APPLICATION_MODAL);
+        alert.initOwner((Stage) sendButton.getScene().getWindow());
+        alert.show();
+    }
 
-	public Settings getSettings() {
-		return settings;
-	}
+    protected void showAlert(String messageId, Alert.AlertType alertType)
+    {
+        Alert alert = new Alert(alertType, language.getLanguageBundle().getString(messageId));
+        alert.initModality(Modality.APPLICATION_MODAL);
+        alert.initOwner((Stage) sendButton.getScene().getWindow());
+        alert.show();
+    }
 
-	public void setIpDns(Ip ip) {
-		this.ipDns = ip;
-	}
+    /**
+     * Function takes data from parameter in form of String
+     * and put them into a clipboard
+     *
+     * @param data
+     */
+    protected void copyDataToClipBoard(String data)
+    {
+        final Clipboard clipboard = Clipboard.getSystemClipboard();
+        final ClipboardContent content = new ClipboardContent();
+        content.putString(data);
+        clipboard.setContent(content);
+    }
 
-	public void setSettings(Settings settings) {
-		this.settings = settings;
-	}
+    @FXML
+    protected void onDomainNameAction(ActionEvent e)
+    {
+        sendButtonFired(e);
+    }
 
-	public Language getLanguage() {
-		return language;
-	}
+    protected void sendButtonFired(ActionEvent e)
+    {
+    }
 
-	public void setLanguage(Language language) {
-		this.language = language;
-		// System.out.println("Language loads to another window");
-	}
+    @FXML
+    protected void copyJsonResponseDataFired(ActionEvent event)
+    {
+    }
 
-	public String getTitle()
-	{
-		String client = language.getLanguageBundle().getString("title");
-		String protocol = getProtocol();
-		return client+" "+protocol;
-	}
+    @FXML
+    protected void copyJsonRequestDataFired(ActionEvent event)
+    {
+    }
 
-	public abstract String getProtocol();
+    /**
+     * Function creates filter for Wireshark based on selected RadioMenuItem in main menu
+     */
+    public void copyWiresharkFilter()
+    {
+        String ip;
+        String prefix;
+        try
+        {
+            ip = getDnsServerIp();
+            if (ip == null)
+            {
+                return;
+            }
+        } catch (DnsServerIpIsNotValidException | UnknownHostException e)
+        {
+            showAller(language.getLanguageBundle().getString("CustomEndPointException"));
+            return;
+        }
+        if (Ip.isIPv4Address(ip))
+        {
+            prefix = "ipv4";
+        } else
+        {
+            prefix = "ipv6";
+        }
 
-	public void setLabels() {
-		// To be overridden
-	}
+        parameters.put("ip", ip);
+        parameters.put("prefix", prefix);
 
-	public void loadDataFromSettings() {
-		// to be overridden
-	}
+        updateCustomParameters();
 
-	public void networkInterfaces() {
-		try {
-			interfaceToggleGroup = new ToggleGroup();
-			Enumeration<NetworkInterface> e = NetworkInterface.getNetworkInterfaces();
-			ArrayList<RadioMenuItem> listMenuItems = new ArrayList<RadioMenuItem>();
-			while (e.hasMoreElements()) {
-				RadioMenuItem pom = new RadioMenuItem();
-				NetworkInterface ni = e.nextElement();
-				if (ni.getName().equals(settings.getInterface().getName())) {
-					pom.setSelected(true);
-				}
-				pom.setText(ni.getName() + " -- " + ni.getDisplayName());
-				pom.setUserData(ni);
-				pom.setToggleGroup(interfaceToggleGroup);
-				listMenuItems.add(pom);
-			}
-			interfaceMenu.getItems().addAll(listMenuItems);
-		} catch (SocketException e) {
-			e.printStackTrace();
-		}
-	}
+        if (wiresharkFilterToogleGroup.getSelectedToggle() == null)
+        {
+            showAller("chooseFilter");
+            return;
+        }
+        String out =
+                ((WiresharkFilter) wiresharkFilterToogleGroup.getSelectedToggle().getUserData()).generateQuery(parameters);
+        copyDataToClipBoard(out);
+        showAlert("filterCopied", Alert.AlertType.INFORMATION);
 
-	protected NetworkInterface getInterface() {
-		NetworkInterface netInterface = (NetworkInterface) interfaceToggleGroup.getSelectedToggle().getUserData();
-		LOGGER.info(netInterface.getDisplayName().toString() + " " + netInterface.getName());
-		settings.setInterface(netInterface);
-		return netInterface;
-	}
+    }
 
-	protected void showAller(String exceptionName) {
-		Alert alert = new Alert(Alert.AlertType.ERROR, language.getLanguageBundle().getString(exceptionName));
-		alert.initModality(Modality.APPLICATION_MODAL);
-		alert.initOwner((Stage) sendButton.getScene().getWindow());
-		alert.show();
-	}
+    /**
+     * Function returns IP address, v4 or v6, of selected DNS server from DNS servers TitledPane
+     *
+     * @return String representation of selected DNS server's IP address, null otherwise
+     * @throws DnsServerIpIsNotValidException
+     * @throws UnknownHostException
+     */
+    protected String getDnsServerIp() throws DnsServerIpIsNotValidException, UnknownHostException
+    {
 
-	@FXML
-	protected void onDomainNameAction(ActionEvent e) {
-		sendButtonFired(e);
-	}
+        Toggle selected = dnsserverToggleGroup.getSelectedToggle();
 
-	protected void sendButtonFired(ActionEvent e)
-	{
-	}
+        if (selected == null)
+        {
+            showAller("ChooseDNSServer");
+            return null;
+        }
 
-	@FXML
-	protected void copyJsonResponseDataFired(ActionEvent event)
-	{
-	}
+        Object userDataObject = selected.getUserData();
 
-	@FXML
-	protected void copyJsonRequestDataFired(ActionEvent event)
-	{
-	}
+        String serverIp = null;
+
+        if (userDataObject == null)
+        {
+            return null;
+        }
+
+        if (userDataObject instanceof String)
+        {
+            serverIp = (String) userDataObject;
+        } else if (userDataObject instanceof NameServer)
+        {
+            serverIp = IPv4RadioButton.isSelected() ?
+                    ((NameServer) userDataObject).getIPv4Addr().get(0) :
+                    ((NameServer) userDataObject).getIPv6Addr().get(0);
+        } else if (userDataObject instanceof ToggleGroup)
+        {
+            ToggleGroup group = (ToggleGroup) userDataObject;
+            Toggle selectedAddress = group.getSelectedToggle();
+            if (selectedAddress == null)
+            {
+                showAller("ChooseDNSServer");
+                return null;
+            }
+            serverIp = (String) selectedAddress.getUserData();
+        } else if (userDataObject instanceof TextField)
+        {
+            TextField input = (TextField) userDataObject;
+            serverIp = input.getText();
+        }
+
+        return serverIp;
+
+    }
 
 }
