@@ -36,7 +36,6 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.ComboBox?>
-<?import javafx.scene.control.CustomMenuItem?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
@@ -74,20 +73,7 @@
                   <MenuItem fx:id="deleteDNSServersHistory" mnemonicParsing="false" text="%deleteDNSServersHistory" />
           </items>
         </Menu>
-            <Menu fx:id="zmenaRozhrani" mnemonicParsing="false" text="Wireshark">
-               <items>
-                  <CustomMenuItem mnemonicParsing="false" text="Unspecified Action">
-                     <content>
-                        <Label fx:id="wiresharkLabel" text="%wiresharkLabel" />
-                     </content>
-                  </CustomMenuItem>
-                  <RadioMenuItem fx:id="justIp" mnemonicParsing="false" text="%justIp" />
-                  <RadioMenuItem fx:id="ipAsFilter" mnemonicParsing="false" text="%ipAsFilter" />
-                  <RadioMenuItem fx:id="ipWithUDPAsFilter" mnemonicParsing="false" text="%ipWithUDPAsFilter" />
-                  <RadioMenuItem fx:id="ipwithTCPAsFilter" mnemonicParsing="false" text="%ipwithTCPAsFilter" />
-                  <RadioMenuItem fx:id="ipWithUDPandTcpAsFilter" mnemonicParsing="false" text="%ipWithUDPandTcpAsFilter" />
-               </items>
-            </Menu>
+            <Menu fx:id="wiresharkMenu" mnemonicParsing="false" text="Wireshark" />
             <Menu fx:id="interfaceMenu" mnemonicParsing="false" text="%interfaceMenu" />
       </menus>
     </MenuBar>
