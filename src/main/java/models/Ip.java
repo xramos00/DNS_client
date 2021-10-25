@@ -84,8 +84,24 @@ public class Ip {
 	
 	public static String getIpV6OfDomainName(String domainName) throws UnknownHostException
 	{
-		InetAddress addr= Inet6Address.getByName(domainName);
-		return addr.getHostAddress();
+		InetAddress addresses[] = InetAddress.getAllByName(domainName);
+		if (returnFirstInet6Address(addresses) == null)
+		{
+			return null;
+		}
+		return returnFirstInet6Address(addresses).getHostAddress();
+	}
+
+	private static Inet6Address returnFirstInet6Address(InetAddress[] addresses)
+	{
+		for (InetAddress address: addresses)
+		{
+			if (address instanceof Inet6Address)
+			{
+				return (Inet6Address) address;
+			}
+		}
+		return null;
 	}
 
 	public void getUserDoHurlIP(String domain) throws CustomEndPointException {

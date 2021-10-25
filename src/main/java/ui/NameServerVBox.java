@@ -162,8 +162,21 @@ public class NameServerVBox extends VBox
         loadIPv4();
     }
 
+    /**
+     * Function loads IPv4 addresses of name servers
+     */
     public void loadIPv4()
     {
+        // if IPv6 button of same name server was selected, IPv4 version of name sever radio button is set to selected
+        if (IPv6radioButton.isSelected())
+        {
+            IPv4radioButton.setSelected(true);
+            // if name server has more than one IPv4 address then first from list of its addresses is selected
+            if (IPv4ToggleButtonsHBox != null)
+            {
+                ((IPToggleButton)IPv4ToggleButtonsHBox.getChildrenUnmodifiable().get(0)).setSelected(true);
+            }
+        }
         Separator separator = new Separator();
         separator.setPadding(new Insets(10, 0, 0, 0));
         this.getChildren().clear();
@@ -177,8 +190,21 @@ public class NameServerVBox extends VBox
         }
     }
 
+    /**
+     * Function loads IPv6 addresses of name servers
+     */
     public void loadIPv6()
     {
+        // if IPv4 button of same name server was selected, IPv6 version of name sever radio button is set to selected
+        if (IPv4radioButton.isSelected())
+        {
+            IPv6radioButton.setSelected(true);
+            // if name server has more than one IPv4 address then first from list of its addresses is selected6
+            if (IPv6ToggleButtonsHBox != null)
+            {
+                ((IPToggleButton)IPv6ToggleButtonsHBox.getChildrenUnmodifiable().get(0)).setSelected(true);
+            }
+        }
         Separator separator = new Separator();
         separator.setPadding(new Insets(10, 0, 0, 0));
         this.getChildren().clear();
