@@ -407,7 +407,7 @@
                                           <Font size="15.0" />
                                        </font>
                                     </RadioButton>
-                                    <CheckBox fx:id="holdConectionCheckbox" disable="true" mnemonicParsing="false" onAction="#holdConnectionAction" prefHeight="21.0" prefWidth="143.0" text="PodrÅ¾et spojenÃ­" GridPane.columnIndex="1">
+                                    <CheckBox fx:id="holdConnectionCheckbox" disable="true" mnemonicParsing="false" onAction="#holdConnectionAction" prefHeight="21.0" prefWidth="143.0" text="PodrÅ¾et spojenÃ­" GridPane.columnIndex="1">
                                        <font>
                                           <Font size="15.0" />
                                        </font>

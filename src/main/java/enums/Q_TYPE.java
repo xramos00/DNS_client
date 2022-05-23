@@ -1,5 +1,8 @@
 package enums;
-
+/*
+ * Author - Martin Biolek
+ * Link - https://github.com/mbio16/clientDNS
+ * */
 import models.UInt16;
 
 public enum Q_TYPE {

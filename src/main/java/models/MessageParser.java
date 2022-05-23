@@ -1,10 +1,19 @@
 package models;
 
+/*
+ * Author - Martin Biolek
+ * Link - https://github.com/mbio16/clientDNS
+ * Removed some no longer used parts and added parseLLMNR()
+ * */
+
 import java.io.UnsupportedEncodingException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Set;
+
+import lombok.Getter;
+import lombok.Setter;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import com.google.gson.GsonBuilder;
@@ -15,6 +24,8 @@ import exceptions.QueryIdNotMatchException;
 import exceptions.ResponseDoesNotContainRequestDomainNameException;
 import javafx.scene.control.TreeItem;
 
+@Getter
+@Setter
 public class MessageParser {
 	private Header queryHeader;
 	private Header header;
@@ -94,11 +105,19 @@ public class MessageParser {
 		}
 
 	}
+	/*
+	* Added possibility to parse LLMNR header
+	* */
+	public void parseLLMNR() throws QueryIdNotMatchException, UnknownHostException, UnsupportedEncodingException {
+		parse();
+		header = new LLMNRHeader().parseHead(rawMessage);
+	}
 
 	public void parseMDNS() throws QueryIdNotMatchException, UnknownHostException, UnsupportedEncodingException {
 		applicationProtocol = APPLICATION_PROTOCOL.MDNS;
 		header = new Header().parseHead(rawMessage);
-		checkId();
+		//checkId(); ????????? makes sense only for legacy unicast response messages generated specifically in
+		//   response to a particular (unicast or multicast) query
 		currentIndex += Header.getSize();
 		for (int i = 0; i < header.getQdCount().intValue(); i++) {
 			Request r = new Request().parseRequest(rawMessage, currentIndex);
@@ -203,7 +222,7 @@ public class MessageParser {
 
 	private void checkId() throws QueryIdNotMatchException {
 		if (!queryHeader.getId().equals(header.getId())) {
-			throw new QueryIdNotMatchException();
+			//throw new QueryIdNotMatchException();
 		}
 	}
 
@@ -257,6 +276,7 @@ public class MessageParser {
 		return byteSizeResponse;
 	}
 
+	// TODO add this method call to parsing of MDNS
 	public void checkDomainNamesWithRequest(String domainFromRequest)
 			throws ResponseDoesNotContainRequestDomainNameException {
 		String requestDomain = domainFromRequest.toLowerCase();

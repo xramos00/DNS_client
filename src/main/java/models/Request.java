@@ -1,9 +1,13 @@
 package models;
-
+/*
+ * Author - Martin Biolek
+ * Link - https://github.com/mbio16/clientDNS
+ * */
 import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 import java.util.logging.Logger;
 
+import lombok.Data;
 import org.json.simple.JSONObject;
 import enums.Q_COUNT;
 import enums.Q_TYPE;
@@ -12,6 +16,7 @@ import exceptions.NotValidDomainNameException;
 import exceptions.NotValidIPException;
 import javafx.scene.control.TreeItem;
 
+@Data
 public class Request {
 
 	private String qName;

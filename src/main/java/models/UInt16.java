@@ -1,5 +1,8 @@
 package models;
-
+/*
+ * Author - Martin Biolek
+ * Link - https://github.com/mbio16/clientDNS
+ * */
 import java.nio.BufferOverflowException;
 import java.nio.ByteBuffer;
 import java.util.Random;

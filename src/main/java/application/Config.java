@@ -1,135 +1,106 @@
 package application;
-
-import models.Ip;
+/*
+ * Author - Patricia Ramosova
+ * Link - https://github.com/xramos00/DNS_client
+ * */
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sun.javafx.collections.NonIterableChange;
+import javafx.scene.input.KeyCode;
+import lombok.Getter;
+import lombok.Setter;
+import models.GeneralConfig;
+import models.LoadTestConfig;
 import models.NameServer;
-
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.lang.reflect.Array;
-import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.stream.Collector;
-
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
-
-import javafx.scene.input.KeyCode;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import java.io.File;
+import java.io.IOException;
+import java.lang.reflect.Array;
+import java.util.LinkedList;
+import java.util.List;
+
 public class Config {
-	
-	private static final String configResource = "./config.properties";
-	
-	private static PropertiesConfiguration conf = null;
 
-	private static List<NameServer> rootNameServers = new LinkedList<>();
-	
-	private static List<NameServer> NameServers = new LinkedList<>();
-	
-	private static List<NameServer> DoHNameServers = new LinkedList<>();
-	
-	public static final String ROOTSERVERSDOMAINNAMES = "rootServersDomainNames";
+    @Getter
+    private static final String configResource = "./config.properties";
 
-	public static final String SERVERSDOMAINNAMES = "serversDomainNames";
+    @Getter
+    @Setter
+    private static PropertiesConfiguration conf = null;
 
-	public static List<NameServer> getRootNameServers() {
-		return Config.rootNameServers;
-	}
+    @Getter
+    @Setter
+    private static List<NameServer> rootNameServers = new LinkedList<>();
 
-	public static void setRootNameServers(List<NameServer> rootNameServers) {
-		Config.rootNameServers = rootNameServers;
-	}
+    @Getter
+    @Setter
+    private static List<NameServer> NameServers = new LinkedList<>();
 
-	public static List<NameServer> getNameServers() {
-		return Config.NameServers;
-	}
+    @Getter
+    @Setter
+    private static List<NameServer> DoHNameServers = new LinkedList<>();
 
-	public static void setNameServers(List<NameServer> nameServers) {
-		Config.NameServers = nameServers;
-	}
+    @Getter
+    @Setter
+    private static LoadTestConfig loadTestConfig = new LoadTestConfig();
 
-	public static List<NameServer> getDoHNameServers() {
-		return Config.DoHNameServers;
-	}
+    @Getter
+    @Setter
+    private static GeneralConfig generalConfig = new GeneralConfig();
 
-	public static void setDoHNameServers(List<NameServer> doHNameServers) {
-		Config.DoHNameServers = doHNameServers;
-	}
-	
-	public static PropertiesConfiguration getConfProperties() throws ConfigurationException
-	{
-		if (Config.conf == null)
-		{
-			Config.conf = new PropertiesConfiguration(Config.configResource);
-		}
-		return Config.conf;
-	}
-	
-	@SuppressWarnings("unchecked")
-	public static void loadConfiguration() throws ConfigurationException, IOException, ParseException {
-		Config.rootNameServers = new LinkedList<NameServer>();
-		
-		String rootServersFilePath = Config.getConfProperties().getString(ROOTSERVERSDOMAINNAMES);
-		BufferedReader reader;
-		reader = new BufferedReader(new FileReader(rootServersFilePath));
-		
-		String line = reader.readLine();
-		while(line != null) {
-			NameServer ns = new NameServer(Config.keyCodeFromDomainName(line).toString().toUpperCase(),line,new LinkedList<String>(List.of(new String[]{Ip.getIpV4OfDomainName(line)})),
-					new LinkedList<String>(List.of(new String[]{Ip.getIpV6OfDomainName(line)})));
-			ns.setKeyCode(Config.keyCodeFromDomainName(line));
-			Config.rootNameServers.add(ns);
-			
-			line = reader.readLine();
-		}
-		reader.close();
+    public static final String ROOTSERVERSDOMAINNAMES = "rootServersDomainNames";
 
-		// parse JSON with DNS servers
-		JSONParser parser = new JSONParser();
-		FileReader fileReader = new FileReader(Config.getConfProperties().getString(SERVERSDOMAINNAMES));
-		JSONArray json = (JSONArray) parser.parse(fileReader);
+    public static final String SERVERSDOMAINNAMES = "serversDomainNames";
 
-		// for each DNS server create NameServer object
-		json.forEach(obj -> {
-			JSONObject nameServer = (JSONObject) obj;
-			// get IPv4 and IPv6 addresses
-			JSONArray ipv4 = (JSONArray) nameServer.get("ipv4");
-			JSONArray ipv6 = (JSONArray) nameServer.get("ipv6");
-			List<String> ipv4List = new LinkedList<>();
-			List<String> ipv6List = new LinkedList<>();
+    public static final String LOADTESTCONFIG = "loadTestConfig";
 
-			if (ipv4!=null)
-			{
-				ipv4.forEach(o -> ipv4List.add((String)o));
-			}
-			if (ipv6!=null)
-			{
-				ipv6.forEach(o -> ipv6List.add((String)o));
-			}
+    public static final String GENERALCONFIG = "generalConfig";
 
-			NameServer ns = new NameServer((String) nameServer.get("name"),(String) nameServer.get("domainName"),
-					ipv4List,ipv6List);
-			Config.NameServers.add(ns);
-		});
-		fileReader.close();
-	}
-	
-	public static KeyCode keyCodeFromDomainName(String domain)
-	{
-		domain = domain.toUpperCase();
-		String parts[] = domain.split("\\.");
-		if (Array.getLength(parts) > 0)
-		{
-			return KeyCode.getKeyCode(parts[0]);
-		}
-		return null;
-	}
-	
+    public static PropertiesConfiguration getConfProperties() throws ConfigurationException {
+        if (Config.conf == null) {
+            Config.conf = new PropertiesConfiguration(Config.configResource);
+        }
+        return Config.conf;
+    }
+
+    @SuppressWarnings("unchecked")
+    public static void loadConfiguration() throws ConfigurationException, IOException, ParseException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        List<NameServer> rootNameServerList = objectMapper.readValue(
+                new File(Config.getConfProperties().getString(ROOTSERVERSDOMAINNAMES)), new TypeReference<List<NameServer>>() {
+                });
+        rootNameServerList.forEach(nameServer -> nameServer.setKeyCode(Config.keyCodeFromDomainName(nameServer.getDomainName())));
+        Config.setRootNameServers(rootNameServerList);
+
+        List<NameServer> nameServerList = objectMapper.readValue(
+                new File(Config.getConfProperties().getString(SERVERSDOMAINNAMES)), new TypeReference<List<NameServer>>() {
+                });
+        Config.setNameServers(nameServerList);
+
+        LoadTestConfig loadTestConfig = objectMapper.readValue(
+                new File(Config.getConfProperties().getString(LOADTESTCONFIG)), new TypeReference<LoadTestConfig>() {
+                });
+        Config.setLoadTestConfig(loadTestConfig);
+        GeneralConfig generalConfig = objectMapper.readValue(
+                new File(Config.getConfProperties().getString(GENERALCONFIG)), new TypeReference<GeneralConfig>() {
+                });
+        Config.setGeneralConfig(generalConfig);
+
+
+    }
+
+    /*
+    * Converting domain name of root server to KeyCode object
+    * */
+    public static KeyCode keyCodeFromDomainName(String domain) {
+        domain = domain.toUpperCase();
+        String parts[] = domain.split("\\.");
+        if (Array.getLength(parts) > 0) {
+            return KeyCode.getKeyCode(parts[0]);
+        }
+        return null;
+    }
 }

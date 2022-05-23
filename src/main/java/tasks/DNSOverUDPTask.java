@@ -1,41 +1,64 @@
 package tasks;
-
+/*
+ * Author - Patricia Ramosova
+ * Link - https://github.com/xramos00/DNS_client
+ * Methods used from Martin Biolek thesis are marked with comment
+ * */
 import enums.APPLICATION_PROTOCOL;
 import enums.Q_COUNT;
 import enums.TRANSPORT_PROTOCOL;
 import exceptions.*;
 import javafx.application.Platform;
+import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import models.Ip;
 import tasks.runnables.ProgressUpdateRunnable;
 import tasks.runnables.RequestResultsUpdateRunnable;
 
 import java.io.IOException;
+import java.io.InterruptedIOException;
 import java.io.UnsupportedEncodingException;
 import java.net.*;
 
+/**
+ * Class representing protocol DNS using UDP connection
+ */
+@Getter
+@Setter
 public class DNSOverUDPTask extends DNSTaskBase{
 
-    public DNSOverUDPTask(boolean recursion, boolean dnssec, boolean rrRecords, String domain, Q_COUNT[] types, TRANSPORT_PROTOCOL transport_protocol, APPLICATION_PROTOCOL application_protocol, String resolverIP, NetworkInterface netInterface, boolean caFlag) throws UnsupportedEncodingException, NotValidIPException, NotValidDomainNameException, UnknownHostException {
-        super(recursion, dnssec, caFlag, rrRecords, domain, types, transport_protocol, application_protocol, resolverIP, netInterface);
+    protected DatagramSocket datagramSocket;
+    protected boolean run = true;
+
+    public DNSOverUDPTask(boolean recursion, boolean adFlag, boolean caFlag, boolean doFlag, String domain, Q_COUNT[] types, TRANSPORT_PROTOCOL transport_protocol, APPLICATION_PROTOCOL application_protocol, String resolverIP, NetworkInterface netInterface) throws UnsupportedEncodingException, NotValidIPException, NotValidDomainNameException, UnknownHostException {
+        super(recursion, adFlag, caFlag, doFlag, domain, types, transport_protocol, application_protocol, resolverIP, netInterface, null);
     }
 
+    /*
+    * Body of method taken from Martin Biolek thesis and modified
+    * */
     @Override
-    protected void sendData() throws TimeoutException, MessageTooBigForUDPException, InterfaceDoesNotHaveIPAddressException {
-        if (getSize() > MAX_UDP_SIZE)
+    protected void sendData() throws TimeoutException, MessageTooBigForUDPException, InterfaceDoesNotHaveIPAddressException, NotValidDomainNameException, NotValidIPException, UnsupportedEncodingException, InterruptedException, QueryIdNotMatchException, UnknownHostException {
+        if (getSize() > MAX_UDP_SIZE){
+            exc = new MessageTooBigForUDPException();
             throw new MessageTooBigForUDPException();
+        }
         setMessagesSent(0);
-        DatagramSocket datagramSocket;
+
         try {
             datagramSocket = new DatagramSocket(0, Ip.getIpAddressFromInterface(getInterfaceToSend(), getResolver()));
         } catch (Exception e) {
+            exc = new InterfaceDoesNotHaveIPAddressException();
             throw new InterfaceDoesNotHaveIPAddressException();
         }
-        boolean run = true;
+
         boolean exception = false;
         boolean timeout = false;
         while (run) {
             try {
                 if (getMessagesSent() == DNSTaskBase.MAX_MESSAGES_SENT) {
+                    exc = new TimeoutException();
                     throw new TimeoutException();
                 }
 
@@ -53,12 +76,17 @@ public class DNSOverUDPTask extends DNSTaskBase{
                 datagramSocket.close();
                 run = false;
             } catch (SocketTimeoutException | SocketException e) {
+                e.printStackTrace();
                 LOGGER.warning("Time out for the: " + (getMessagesSent() + 1) + " message");
                 timeout = true;
                 if (getMessagesSent() == MAX_MESSAGES_SENT) {
                     datagramSocket.close();
                 }
-            } catch (IOException e) {
+            } catch(InterruptedIOException e){
+                e.printStackTrace();
+                throw new InterruptedException();
+            }
+            catch (IOException e) {
                 e.printStackTrace();
             }
             setMessagesSent(getMessagesSent()+1);
@@ -73,8 +101,8 @@ public class DNSOverUDPTask extends DNSTaskBase{
             }
             updateProgressUI();
         }
-
-        if (exception) {
+        if (timeout) {
+            exc = new TimeoutException();
             throw new TimeoutException();
         }
     }
@@ -91,5 +119,10 @@ public class DNSOverUDPTask extends DNSTaskBase{
         Platform.runLater(new RequestResultsUpdateRunnable(this));
     }
 
+    @Override
+    public void stopExecution(){
+        run=false;
+        datagramSocket.close();
+    }
 
 }

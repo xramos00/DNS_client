@@ -1,5 +1,8 @@
 package enums;
-
+/*
+ * Author - Martin Biolek
+ * Link - https://github.com/mbio16/clientDNS
+ * */
 public enum AUTHENTICATE_DATA {
 	NON_AUTHENTICATED_ACCEPTED((boolean) true), NON_AUTHENTICATED_NOT_ACCEPTED((boolean) false);
 

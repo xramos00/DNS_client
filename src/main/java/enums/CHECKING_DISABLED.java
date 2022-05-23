@@ -1,5 +1,8 @@
 package enums;
-
+/*
+ * Author - Martin Biolek
+ * Link - https://github.com/mbio16/clientDNS
+ * */
 public enum CHECKING_DISABLED {
 	DATA_NOT_CHECKED((boolean) true), DATA_CHECKED((boolean) false);
 

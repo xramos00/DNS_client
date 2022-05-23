@@ -1,5 +1,8 @@
 package enums;
-
+/*
+ * Author - Martin Biolek
+ * Link - https://github.com/mbio16/clientDNS
+ * */
 public enum KEY_USAGE {
 	KEY_SIGNING_KEY((byte) 0x01), NOT_KEY_SIGNING_KEY((byte) 0x00);
 

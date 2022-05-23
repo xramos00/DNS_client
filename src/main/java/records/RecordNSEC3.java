@@ -1,5 +1,8 @@
 package records;
-
+/*
+ * Author - Martin Biolek
+ * Link - https://github.com/mbio16/clientDNS
+ * */
 import org.json.simple.JSONObject;
 import enums.DIGEST_TYPE;
 import enums.Q_COUNT;

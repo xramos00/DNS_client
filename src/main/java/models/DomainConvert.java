@@ -1,5 +1,8 @@
 package models;
-
+/*
+* Author - Martin Biolek
+* Link - https://github.com/mbio16/clientDNS
+* */
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -194,6 +197,9 @@ public class DomainConvert {
 
 	public static boolean isValidDomainName(String domainName) {
 
+		if (domainName.contains(":")){
+			return false;
+		}
 		if (domainName.endsWith(".")) {
 			domainName = domainName.substring(0, domainName.length() - 1);
 		}

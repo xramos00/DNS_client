@@ -1,5 +1,9 @@
 package models;
-
+/*
+ * Author - Martin Biolek
+ * Link - https://github.com/mbio16/clientDNS
+ * Added isClosed() method
+ * */
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -68,6 +72,11 @@ public class TCPConnection {
 			outputStream.close();
 			socket.close();
 		}
+	}
+
+	public boolean isClosed()
+	{
+		return socket.isClosed();
 	}
 
 	private void sendAndRecieve(byte[] messagesAsBytes)

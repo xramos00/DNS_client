@@ -1,5 +1,8 @@
 package enums;
-
+/*
+ * Author - Martin Biolek
+ * Link - https://github.com/mbio16/clientDNS
+ * */
 public enum KEY_TYPE {
 	DNS_ZONE_KEY((byte) 0x01), NOT_DNS_ZONE_KEY((byte) 0x00);
 

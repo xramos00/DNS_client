@@ -1,19 +1,16 @@
 package ui;
-
+/*
+ * Author - Patricia Ramosova
+ * Link - https://github.com/xramos00/DNS_client
+ * */
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.ToggleButton;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 public class IPToggleButton extends ToggleButton {
-
-    public RadioButton getControlButton()
-    {
-        return controlButton;
-    }
-
-    public void setControlButton(RadioButton controlButton)
-    {
-        this.controlButton = controlButton;
-    }
 
     private RadioButton controlButton;
 

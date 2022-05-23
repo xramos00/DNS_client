@@ -1,5 +1,8 @@
 package enums;
-
+/*
+ * Author - Martin Biolek
+ * Link - https://github.com/mbio16/clientDNS
+ * */
 public enum OP_CODE {
 	QUERY((byte) 0x00), RESPONSE((byte) 0x01), SERVER_STATUS((byte) 0x02);
 

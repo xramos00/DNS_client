@@ -1,5 +1,8 @@
 package enums;
-
+/*
+ * Author - Martin Biolek
+ * Link - https://github.com/mbio16/clientDNS
+ * */
 public enum CERTIFICATE_FLAG {
 	ISSUER((byte) 0x80);
 

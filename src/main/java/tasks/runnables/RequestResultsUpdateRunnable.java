@@ -1,20 +1,25 @@
 package tasks.runnables;
+/*
+ * Author - Patricia Ramosova
+ * Link - https://github.com/xramos00/DNS_client
+ * */
 
 import javafx.scene.control.TreeItem;
-import javafx.scene.control.TreeView;
-import tasks.DNSOverTCPTask;
 import tasks.DNSTaskBase;
+import ui.GeneralController;
 
 import java.util.logging.Logger;
-
+/**
+ * Class extends Runnable and is used to publish results of requests to GUI after end of sending messages
+ */
 public class RequestResultsUpdateRunnable implements Runnable {
 
-    DNSTaskBase dnsOverTCPTask = null;
-    protected Logger LOGGER;
+    DNSTaskBase dnsTaskBase = null;
+    protected Logger LOGGER = Logger.getLogger(RequestResultsUpdateRunnable.class.getName());
 
-    public RequestResultsUpdateRunnable(DNSTaskBase dnsOverTCPTask)
+    public RequestResultsUpdateRunnable(DNSTaskBase dnsTaskBase)
     {
-        this.dnsOverTCPTask = dnsOverTCPTask;
+        this.dnsTaskBase = dnsTaskBase;
     }
 
     protected void expandAll(TreeItem<String> t) {
@@ -37,14 +42,20 @@ public class RequestResultsUpdateRunnable implements Runnable {
     @Override
     public void run() {
         // update
-        dnsOverTCPTask.setMessagesSentProperty(dnsOverTCPTask.getMessagesSent());
-        dnsOverTCPTask.setRequestProperty(dnsOverTCPTask.getRequest());
-        dnsOverTCPTask.setResponseProperty(dnsOverTCPTask.getResponse());
-        dnsOverTCPTask.setDurationProperty(dnsOverTCPTask.getDuration());
-        expandAll(dnsOverTCPTask.getRequestProperty());
-        expandAll(dnsOverTCPTask.getResponseProperty());
-        dnsOverTCPTask.getProgressBar().setProgress(1.0);
-        dnsOverTCPTask.setQuerySizeProperty(dnsOverTCPTask.getByteSizeQuery());
-        dnsOverTCPTask.setResponseSizeProperty(dnsOverTCPTask.getByteSizeResponse());
+        GeneralController controller = dnsTaskBase.getController();
+        controller.getSendButton().setText(controller.getButtonText());
+        controller.getProgressBar().setProgress(0);
+        dnsTaskBase.setMessagesSentProperty(dnsTaskBase.getMessagesSent());
+        dnsTaskBase.setRequestProperty(dnsTaskBase.getRequest());
+        dnsTaskBase.setResponseProperty(dnsTaskBase.getResponse());
+        dnsTaskBase.setDurationProperty(dnsTaskBase.getDuration());
+        expandAll(dnsTaskBase.getRequestProperty());
+        expandAll(dnsTaskBase.getResponseProperty());
+        dnsTaskBase.setQuerySizeProperty(dnsTaskBase.getByteSizeQuery());
+        dnsTaskBase.setResponseSizeProperty(dnsTaskBase.getByteSizeResponse());
+        LOGGER.info("setting progress to 0 to reset");
+        dnsTaskBase.getProgressBar().setProgress(0);
+        dnsTaskBase.getRequestProperty().setExpanded(true);
+        dnsTaskBase.getResponseProperty().setExpanded(true);
     }
 }

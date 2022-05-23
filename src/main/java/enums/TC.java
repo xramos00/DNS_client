@@ -1,5 +1,8 @@
 package enums;
-
+/*
+ * Author - Martin Biolek
+ * Link - https://github.com/mbio16/clientDNS
+ * */
 public enum TC
 {
     TRUNCATED((boolean) true), NON_TRUNCATED((boolean) false);

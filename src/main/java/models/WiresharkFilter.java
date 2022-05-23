@@ -1,9 +1,17 @@
 package models;
-
+/*
+ * Author - Patricia Ramosova
+ * Link - https://github.com/xramos00/DNS_client
+ * */
+import lombok.Data;
 import org.apache.commons.text.StringSubstitutor;
 
 import java.util.Map;
 
+/**
+ * Class representing Wireshark filters available in app using string templating and place holders
+ */
+@Data
 public class WiresharkFilter
 {
 
@@ -13,26 +21,6 @@ public class WiresharkFilter
     public WiresharkFilter(String name, String template)
     {
         this.name = name;
-        this.template = template;
-    }
-
-    public String getName()
-    {
-        return name;
-    }
-
-    public void setName(String name)
-    {
-        this.name = name;
-    }
-
-    public String getTemplate()
-    {
-        return template;
-    }
-
-    public void setTemplate(String template)
-    {
         this.template = template;
     }
 

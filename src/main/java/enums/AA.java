@@ -1,5 +1,8 @@
 package enums;
-
+/*
+ * Author - Martin Biolek
+ * Link - https://github.com/mbio16/clientDNS
+ * */
 public enum AA {
 	AUTHORITATIVE((boolean) true), NON_AUTHORITATIVE((boolean) false);
 

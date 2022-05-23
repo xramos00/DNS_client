@@ -52,9 +52,9 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox fx:id="vboxRoot" maxHeight="1.7976931348623157E308" prefHeight="480.0" prefWidth="640.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ui.DNSController">
+<VBox fx:id="vboxRoot" maxHeight="1.7976931348623157E308" prefHeight="480.0" prefWidth="640.0" xmlns="http://javafx.com/javafx/15" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ui.DNSController">
   <children>
-    <MenuBar VBox.vgrow="NEVER">
+    <MenuBar fx:id="darkModeMenu" VBox.vgrow="NEVER">
       <menus>
         <Menu fx:id="actionMenu" mnemonicParsing="false" text="%actionMenu">
           <items>
@@ -63,18 +63,22 @@
         </Menu>
         <Menu fx:id="languageMenu" mnemonicParsing="false" text="%languageMenu">
           <items>
-                  <RadioMenuItem fx:id="czechRadioButton" mnemonicParsing="false" text="Čeština" />
-                  <RadioMenuItem fx:id="englishRadioButton" mnemonicParsing="false" text="English" />
+                  <RadioMenuItem fx:id="czechRadioButton" mnemonicParsing="false" onAction="#changeLanguageMenu" text="Čeština" />
+                  <RadioMenuItem fx:id="englishRadioButton" mnemonicParsing="false" onAction="#changeLanguageMenu" text="English" />
           </items>
         </Menu>
         <Menu fx:id="historyMenu" mnemonicParsing="false" text="%historyMenu">
           <items>
-            <MenuItem fx:id="deleteDomainNameHistory" mnemonicParsing="false" text="%deleteDomainNameHistory" />
-                  <MenuItem fx:id="deleteDNSServersHistory" mnemonicParsing="false" text="%deleteDNSServersHistory" />
+            <MenuItem fx:id="deleteDomainNameHistory" mnemonicParsing="false" onAction="#deleteDomainNameHistoryFired" text="%deleteDomainNameHistory" />
           </items>
         </Menu>
             <Menu fx:id="wiresharkMenu" mnemonicParsing="false" text="Wireshark" />
             <Menu fx:id="interfaceMenu" mnemonicParsing="false" text="%interfaceMenu" />
+            <Menu mnemonicParsing="false" text="%darkModeMenu">
+               <items>
+                  <RadioMenuItem fx:id="darkModeMenuItem" mnemonicParsing="false" text="%darkModeMenuItem" />
+               </items>
+            </Menu>
       </menus>
     </MenuBar>
       <HBox maxHeight="1.7976931348623157E308" VBox.vgrow="ALWAYS">
@@ -97,13 +101,13 @@
                                  <content>
                                     <VBox prefWidth="100.0">
                                        <children>
-                                          <TextField fx:id="domainNameTextField" maxWidth="1.7976931348623157E308" minWidth="170.0" onAction="#onDomainNameAction" promptText="Zadaj domenu" text="www.seznam.cz" VBox.vgrow="ALWAYS" />
-                                          <ComboBox maxWidth="1.7976931348623157E308" minWidth="170.0" VBox.vgrow="ALWAYS" />
+                                          <TextField fx:id="domainNameTextField" maxWidth="1.7976931348623157E308" minWidth="170.0" onAction="#onDomainNameAction" promptText="Zadaj domenu" text="seznam.cz" VBox.vgrow="ALWAYS" />
+                                          <ComboBox fx:id="savedDomainNamesChoiseBox" maxWidth="1.7976931348623157E308" minWidth="170.0" onAction="#onDomainNameChoiseBoxAction" VBox.vgrow="ALWAYS" />
                                        </children>
                                     </VBox>
                                  </content>
                               </TitledPane>
-                              <TitledPane fx:id="DNSSECTitledPane" maxWidth="1.7976931348623157E308" minWidth="150.0" text="DNSSEC">
+                              <TitledPane fx:id="DNSSECTitledPane" expanded="false" maxWidth="1.7976931348623157E308" minWidth="150.0" text="DNSSEC">
                                  <content>
                                     <HBox>
                                        <children>
@@ -142,7 +146,7 @@
                                        <children>
                                           <RadioButton fx:id="udpRadioButton" mnemonicParsing="false" selected="true" text="UDP" />
                                           <RadioButton fx:id="tcpRadioButton" mnemonicParsing="false" text="TCP" />
-                                          <CheckBox fx:id="holdConectionCheckbox" mnemonicParsing="false" text="%holdConectionCheckbox" />
+                                          <CheckBox fx:id="holdConnectionCheckbox" mnemonicParsing="false" text="%holdConnectionCheckbox" />
                                        </children>
                                     </VBox>
                                  </content>
@@ -157,7 +161,7 @@
                                     </VBox>
                                  </content>
                               </TitledPane>
-                              <TitledPane fx:id="recordTypeTitledPane" expanded="false" layoutX="10.0" layoutY="159.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minWidth="160.0" text="%recordTypeTitledPane">
+                              <TitledPane fx:id="recordTypeTitledPane" layoutX="10.0" layoutY="159.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minWidth="160.0" text="%recordTypeTitledPane">
                                  <content>
                                     <VBox prefWidth="100.0">
                                        <children>
@@ -172,6 +176,7 @@
                                                       <CheckBox fx:id="dsCheckBox" mnemonicParsing="false" text="DS" />
                                                       <CheckBox fx:id="txtCheckBox" mnemonicParsing="false" text="TXT" />
                                                       <CheckBox fx:id="nsecCheckBox" mnemonicParsing="false" text="NSEC" />
+                                                      <CheckBox fx:id="cdsCheckBox" mnemonicParsing="false" text="CDS" />
                                                    </children>
                                                 </VBox>
                                                 <VBox prefHeight="200.0" prefWidth="100.0">
@@ -183,12 +188,13 @@
                                                       <CheckBox fx:id="caaCheckBox" mnemonicParsing="false" text="CAA" />
                                                       <CheckBox fx:id="rrsigCheckBox" mnemonicParsing="false" text="RRSIG" />
                                                       <CheckBox fx:id="nsec3CheckBox" mnemonicParsing="false" text="NSEC3" />
+                                                      <CheckBox fx:id="cdnskeyCheckBox" mnemonicParsing="false" text="CDNSKEY" />
                                                    </children>
                                                 </VBox>
                                              </children>
                                           </HBox>
-                                          <CheckBox fx:id="anyCheckBox" mnemonicParsing="false" text="ANY" />
                                           <CheckBox fx:id="nsec3paramCheckBox" layoutX="20.0" layoutY="156.0" mnemonicParsing="false" text="NSEC3PARAM" />
+                                          <CheckBox fx:id="anyCheckBox" mnemonicParsing="false" text="ANY" />
                                        </children>
                                     </VBox>
                                  </content>
@@ -224,16 +230,16 @@
                <children>
                   <HBox VBox.vgrow="ALWAYS">
                      <children>
-                        <VBox alignment="TOP_CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" HBox.hgrow="ALWAYS">
+                        <VBox alignment="TOP_CENTER" maxHeight="1.7976931348623157E308" maxWidth="450.0" HBox.hgrow="ALWAYS">
                            <children>
-                              <TitledPane fx:id="queryTitledPane" collapsible="false" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minWidth="250.0" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
+                              <TitledPane fx:id="queryTitledPane" collapsible="false" maxHeight="1.7976931348623157E308" maxWidth="450.0" minWidth="250.0" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
                                  <content>
-                                    <TreeView fx:id="requestTreeView" maxWidth="1.7976931348623157E308" prefHeight="200.0" prefWidth="200.0" />
+                                    <TreeView fx:id="requestTreeView" maxWidth="1.7976931348623157E308" onMouseClicked="#treeViewClicked" prefHeight="200.0" prefWidth="200.0" />
                                  </content>
                                  <graphic>
                                     <HBox>
                                        <children>
-                                          <Label text="%queryTitledPane" />
+                                          <Label fx:id="queryLabel" text="%queryTitledPane" />
                                           <Label text=" (" />
                                           <Label fx:id="querySizeLabel" text="0" />
                                           <Label text=" B)" />
@@ -241,7 +247,7 @@
                                     </HBox>
                                  </graphic>
                               </TitledPane>
-                              <Button fx:id="copyRequestJsonButton" alignment="CENTER" mnemonicParsing="false" text="%copyRequestJsonButton" textAlignment="CENTER" />
+                              <Button fx:id="copyRequestJsonButton" alignment="CENTER" mnemonicParsing="false" onAction="#copyJsonRequestDataFired" text="%copyRequestJsonButton" textAlignment="CENTER" />
                               <HBox alignment="CENTER">
                                  <children>
                                     <Label fx:id="numberOfMessagesLabel" text="%numberOfMessagesLabel" />
@@ -254,7 +260,7 @@
                            <children>
                               <TitledPane fx:id="responseTitledPane" collapsible="false" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minWidth="250.0" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
                                  <content>
-                                    <TreeView fx:id="responseTreeView" maxWidth="1.7976931348623157E308" prefHeight="200.0" prefWidth="200.0" />
+                                    <TreeView fx:id="responseTreeView" maxWidth="1.7976931348623157E308" onMouseClicked="#treeViewClicked" prefHeight="200.0" prefWidth="200.0" />
                                  </content>
                                  <VBox.margin>
                                     <Insets />
@@ -262,7 +268,7 @@
                                  <graphic>
                                     <HBox>
                                        <children>
-                                          <Label text="%responseTitledPane" />
+                                          <Label fx:id="responseLabel" text="%responseTitledPane" />
                                           <Label text=" (" />
                                           <Label fx:id="responseSizeLabel" text="0" />
                                           <Label text=" B)" />

@@ -1,9 +1,15 @@
 package models;
+/*
+ * Author - Martin Biolek
+ * Link - https://github.com/mbio16/clientDNS
+ * */
+import lombok.Data;
 
 import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.logging.Logger;
 
+@Data
 public class Language {
 
 	public static final String CZECH = "cz";

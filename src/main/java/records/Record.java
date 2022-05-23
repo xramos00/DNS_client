@@ -1,5 +1,8 @@
 package records;
-
+/*
+ * Author - Martin Biolek
+ * Link - https://github.com/mbio16/clientDNS
+ * */
 import org.json.simple.JSONObject;
 
 public class Record {

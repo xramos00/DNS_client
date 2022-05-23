@@ -1,5 +1,9 @@
 package models;
-
+/*
+ * Author - Martin Biolek
+ * Link - https://github.com/mbio16/clientDNS
+ * TODO remove this file, no longer needed
+ * */
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.BindException;
@@ -46,7 +50,6 @@ import exceptions.NotValidIPException;
 import exceptions.OtherHttpException;
 import exceptions.TimeoutException;
 import javafx.concurrent.Task;
-import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.TreeItem;
 
@@ -260,7 +263,7 @@ public class MessageSender
             case MDNS:
                 mdns();
                 break;
-            case LLMR:
+            case LLMNR:
                 break;
             case DOH:
                 doh();
@@ -389,7 +392,6 @@ public class MessageSender
             stopTime = System.nanoTime();
             return response;
         }
-
     }
 
     private RequestConfig getRequestConfig(String host) throws InterfaceDoesNotHaveIPAddressException
@@ -409,7 +411,6 @@ public class MessageSender
             throw new InterfaceDoesNotHaveIPAddressException();
         }
     }
-
     private void httpRequestAsString(HttpRequestBase request)
     {
         String result = request.toString() + "\n";
@@ -420,6 +421,7 @@ public class MessageSender
         this.byteSizeQuery = result.getBytes().length;
         httpRequest = result;
     }
+
 
     public String getDoHRequest()
     {

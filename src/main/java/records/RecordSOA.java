@@ -1,5 +1,8 @@
 package records;
-
+/*
+ * Author - Martin Biolek
+ * Link - https://github.com/mbio16/clientDNS
+ * */
 import java.nio.ByteBuffer;
 
 import org.json.simple.JSONObject;

@@ -1,5 +1,8 @@
 package records;
-
+/*
+ * Author - Martin Biolek
+ * Link - https://github.com/mbio16/clientDNS
+ * */
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import org.json.simple.JSONObject;

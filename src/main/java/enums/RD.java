@@ -1,5 +1,8 @@
 package enums;
-
+/*
+ * Author - Martin Biolek
+ * Link - https://github.com/mbio16/clientDNS
+ * */
 public enum RD {
 	RECURSIVE((boolean) true), ITERATIVE((boolean) false);
 

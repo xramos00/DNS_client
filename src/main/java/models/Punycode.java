@@ -1,5 +1,8 @@
 package models;
-
+/*
+ * Author - Martin Biolek
+ * Link - https://github.com/mbio16/clientDNS
+ * */
 import java.net.IDN;
 
 public class Punycode {

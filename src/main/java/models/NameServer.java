@@ -1,80 +1,93 @@
 package models;
-
+/*
+ * Author - Patricia Ramosova
+ * Link - https://github.com/xramos00/DNS_client
+ * */
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import javafx.scene.input.KeyCode;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.Value;
 
 import java.util.LinkedList;
 import java.util.List;
 
-public class NameServer
-{
+/**
+ * Class representing one DNS name server loaded from JSON files.
+ */
+@Getter
+@Setter
+@EqualsAndHashCode
+public class NameServer {
 
+    @JsonProperty(value = "name")
     private String name;
 
+    @JsonProperty(value = "domainName")
     private String domainName;
 
-    private List<String> IPv4Addr;
+    @JsonProperty(value = "ipv4")
+    private List<String> ipv4;
 
-    private List<String> IPv6Addr;
+    @JsonProperty(value = "ipv6")
+    private List<String> ipv6;
 
+    @JsonProperty()
     private KeyCode keyCode = null;
 
-    public NameServer(String name, String domainName, List<String> iPv4Addr, List<String> iPv6Addr)
-    {
+    @JsonProperty(value = "doh")
+    private boolean doh = false;
+
+    @JsonProperty(value = "isGet")
+    private boolean isGet = false;
+
+    @JsonProperty(value = "dohOnly")
+    private boolean dohOnly = false;
+
+    @JsonProperty(value = "path")
+    private String path = "";
+
+    @JsonProperty(value = "dot")
+    private boolean dot = false;
+
+    @JsonProperty(value = "dotOnly")
+    private boolean dotOnly = false;
+
+    public NameServer() {
+
+    }
+
+    public NameServer(String name, String domainName, List<String> iPv4Addr, List<String> iPv6Addr) {
         super();
         this.name = name;
         this.domainName = domainName;
-        this.IPv4Addr = iPv4Addr;
-        this.IPv6Addr = iPv6Addr;
+        this.ipv4 = iPv4Addr;
+        this.ipv6 = iPv6Addr;
     }
 
-    public NameServer(String name, String domainName, String iPv4Addr, String iPv6Addr)
-    {
-		this.name = name;
+    public NameServer(String name, String domainName, String iPv4Addr, String iPv6Addr) {
+        this.name = name;
         this.domainName = domainName;
-        this.IPv4Addr = new LinkedList<>();
-        this.IPv6Addr = new LinkedList<>();
-        this.IPv4Addr.add(iPv4Addr);
-        this.IPv6Addr.add(iPv6Addr);
+        this.ipv4 = new LinkedList<>();
+        this.ipv6 = new LinkedList<>();
+        this.ipv4.add(iPv4Addr);
+        this.ipv6.add(iPv6Addr);
     }
 
-    public String getDomainName()
-    {
-        return domainName;
+    public NameServer(String name, String domainName, String iPv4Addr, String iPv6Addr, boolean doh, boolean isGet, String path) {
+        this(name, domainName, iPv4Addr, iPv6Addr);
+        this.doh = doh;
+        this.isGet = isGet;
+        this.path = path;
     }
 
-    public void setDomainName(String domainName)
-    {
-        this.domainName = domainName;
-    }
-
-    public List<String> getIPv4Addr()
-    {
-        return IPv4Addr;
-    }
-
-    public void setIPv4Addr(List<String> iPv4Addr)
-    {
-        IPv4Addr = iPv4Addr;
-    }
-
-    public List<String> getIPv6Addr()
-    {
-        return IPv6Addr;
-    }
-
-    public void setIPv6Addr(List<String> iPv6Addr)
-    {
-        IPv6Addr = iPv6Addr;
-    }
-
-    public KeyCode getKeyCode()
-    {
-        return keyCode;
-    }
-
-    public void setKeyCode(KeyCode keyCode)
-    {
-        this.keyCode = keyCode;
+    public NameServer(String name, String domainName, List<String> iPv4Addr, List<String> iPv6Addr, boolean doh, boolean isGet, String path) {
+        this(name, domainName, iPv4Addr, iPv6Addr);
+        this.doh = doh;
+        this.isGet = isGet;
+        this.path = path;
     }
 
 }
