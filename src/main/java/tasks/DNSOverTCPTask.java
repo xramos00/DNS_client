@@ -63,10 +63,12 @@ public class DNSOverTCPTask extends DNSTaskBase {
 			setMessagesSent(1);
 		} catch (IOException | TimeoutException | CouldNotUseHoldConnectionException |
 				InterfaceDoesNotHaveIPAddressException e) {
-			Platform.runLater(()->{
+			if (!massTesting){
+				Platform.runLater(()->{
 				controller.getSendButton().setText(controller.getButtonText());
 				controller.getProgressBar().setProgress(0);
 			});
+			}
 			throw new TimeoutException();
 		}
 	}

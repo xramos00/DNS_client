@@ -1,9 +1,9 @@
-package ui;
 /*
-* Author - Martin Biolek
-* Link - https://github.com/mbio16/clientDNS
-* Moved common parts from another controllers to this controller
-* */
+ * Author - Patricia Ramosova
+ * Link - https://github.com/xramos00/DNS_client
+ * Based on work of Martin Biolek (https://github.com/mbio16/clientDNS)
+ * */
+package ui;
 
 import application.App;
 import enums.Q_COUNT;

@@ -46,9 +46,9 @@ public class DoTClientInitializer extends ChannelInitializer<SocketChannel> {
             }
         };
         SslHandler sslHandler = sslCtx.newHandler(ch.alloc(), resolverIP, 853);
-        sslHandler.setCloseNotifyFlushTimeoutMillis(2000);
-        sslHandler.setHandshakeTimeoutMillis(2000);
-        sslHandler.setCloseNotifyReadTimeoutMillis(2000);
+        sslHandler.setCloseNotifyFlushTimeoutMillis(3000);
+        sslHandler.setHandshakeTimeoutMillis(3000);
+        sslHandler.setCloseNotifyReadTimeoutMillis(3000);
         pipeline.addLast(readTimeoutHandler);
         pipeline.addLast(channelDuplexHandler);
         pipeline.addLast(sslHandler);

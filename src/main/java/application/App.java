@@ -1,9 +1,10 @@
-package application;
 /*
- * Author - Martin Biolek
- * Link - https://github.com/mbio16/clientDNS
- * Added start app on screen where app was closed last time
+ * Author - Patricia Ramosova
+ * Link - https://github.com/xramos00/DNS_client
+ * Based on work of Martin Biolek (https://github.com/mbio16/clientDNS)
  * */
+package application;
+
 import javafx.application.Application;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;

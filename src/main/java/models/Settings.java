@@ -1,10 +1,12 @@
-package models;
 /*
- * Author - Martin Biolek
- * Link - https://github.com/mbio16/clientDNS
+ * Author - Patricia Ramosova
+ * Link - https://github.com/xramos00/DNS_client
+ * Based on work of Martin Biolek (https://github.com/mbio16/clientDNS)
  * Added LLMNR and load testing domain names and changed the way of storing domain names
  * Added screen hash which is used to open app on screen where was previously closed
  * */
+package models;
+
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;

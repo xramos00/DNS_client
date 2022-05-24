@@ -2,7 +2,6 @@ package ui;
 
 import application.Config;
 import enums.APPLICATION_PROTOCOL;
-import enums.IP_PROTOCOL;
 import enums.Q_COUNT;
 import enums.TRANSPORT_PROTOCOL;
 import exceptions.*;
@@ -20,13 +19,13 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import lombok.Getter;
 import lombok.Setter;
-import models.*;
+import models.Ip;
+import models.NameServer;
+import models.TCPConnection;
+import models.WiresharkFilter;
 import tasks.DNSOverTLS;
-import tasks.DNSTaskBase;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -301,6 +300,7 @@ public class DoTController extends GeneralController {
             // pass new progress bar to Task
             progressBar.setProgress(ProgressIndicator.INDETERMINATE_PROGRESS);
             task.setProgressBar(progressBar);
+            task.setMassTesting(false);
             thread.start();
         } catch (NotValidDomainNameException | NoIpAddrForDomainName | NotValidIPException | DnsServerIpIsNotValidException
                 | MoreRecordsTypesWithPTRException | NonRecordSelectedException | IOException e) {

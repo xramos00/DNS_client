@@ -1,8 +1,10 @@
-package enums;
 /*
- * Author - Martin Biolek
- * Link - https://github.com/mbio16/clientDNS
+ * Author - Patricia Ramosova
+ * Link - https://github.com/xramos00/DNS_client
+ * Based on work of Martin Biolek (https://github.com/mbio16/clientDNS)
  * */
+package enums;
+
 public enum R_CODE {
 	NO_ERROR((byte) 0x00), ERROR_IN_QUERRY((byte) 0x01), SERVER_ERROR((byte) 0x02), NO_AUTH_FOR_ZONE((byte) 0x03),
 	NOT_IMPLEMENTED((byte) 0x04), REQUEST_DENIED((byte) 0x05);

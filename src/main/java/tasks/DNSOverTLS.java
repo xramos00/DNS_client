@@ -73,7 +73,7 @@ public class DNSOverTLS extends DNSTaskBase{
                             "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384",
                             "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256"))
                     .sslProvider(SslProvider.OPENSSL)
-                    .sessionTimeout(2000)
+                    .sessionTimeout(3000)
                     .build();
 
             group = new NioEventLoopGroup();
@@ -90,7 +90,7 @@ public class DNSOverTLS extends DNSTaskBase{
                     .handler(new DoTClientInitializer(sslCtx, resolver, this));
 
             channel = bootstrap.connect(resolver, 853).sync().channel();
-            channel.config().setConnectTimeoutMillis(2000);
+            channel.config().setConnectTimeoutMillis(3000);
 
         /*System.out.println("--------------------------REQUEST--------------------------");
         System.out.println("Sending over TLS");
@@ -110,10 +110,12 @@ public class DNSOverTLS extends DNSTaskBase{
                 Platform.runLater(() -> controller.getSendButton().setText(controller.getButtonText()));
             }
         } catch (SSLException | InterruptedException | TimeoutException e) {
-            Platform.runLater(()->{
-                controller.getSendButton().setText(controller.getButtonText());
-                progressBar.setProgress(0);
-            });
+            if(!massTesting){
+                Platform.runLater(()->{
+                    controller.getSendButton().setText(controller.getButtonText());
+                    controller.getProgressBar().setProgress(0);
+                });
+            }
             e.printStackTrace();
             throw e;
         }

@@ -1,8 +1,10 @@
-package enums;
 /*
- * Author - Martin Biolek
- * Link - https://github.com/mbio16/clientDNS
+ * Author - Patricia Ramosova
+ * Link - https://github.com/xramos00/DNS_client
+ * Based on work of Martin Biolek (https://github.com/mbio16/clientDNS)
  * */
+package enums;
+
 public enum DNSSEC_ALGORITHM_TYPE {
 	RESERVED((byte) 0x00), RSA_MD5((byte) 0x01), DH((byte) 0x02), DSA((byte) 0x03), RESERVED2((byte) 0x04),
 	RSA_SHA1((byte) 0x05), DSA_NSEC3_SHA1((byte) 0x06), RSASHA1_NSEC3_SHA1((byte) 0x07), RSA_SHA256((byte) 0x08),

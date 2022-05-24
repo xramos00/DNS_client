@@ -1,9 +1,11 @@
-package models;
 /*
- * Author - Martin Biolek
- * Link - https://github.com/mbio16/clientDNS
+ * Author - Patricia Ramosova
+ * Link - https://github.com/xramos00/DNS_client
  * Added Lombok annotation and removed manual written getters
+ * Based on work of Martin Biolek (https://github.com/mbio16/clientDNS)
  * */
+package models;
+
 import java.io.UnsupportedEncodingException;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;

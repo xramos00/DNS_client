@@ -1,8 +1,10 @@
-package enums;
 /*
- * Author - Martin Biolek
- * Link - https://github.com/mbio16/clientDNS
+ * Author - Patricia Ramosova
+ * Link - https://github.com/xramos00/DNS_client
+ * Based on work of Martin Biolek (https://github.com/mbio16/clientDNS)
  * */
+package enums;
+
 public enum DIGEST_TYPE {
 	RESERVED((byte) 0x00), SHA1((byte) 0x01), SHA256((byte) 0x02);
 

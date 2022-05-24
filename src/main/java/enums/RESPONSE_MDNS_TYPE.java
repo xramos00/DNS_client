@@ -1,8 +1,10 @@
-package enums;
 /*
- * Author - Martin Biolek
- * Link - https://github.com/mbio16/clientDNS
+ * Author - Patricia Ramosova
+ * Link - https://github.com/xramos00/DNS_client
+ * Based on work of Martin Biolek (https://github.com/mbio16/clientDNS)
  * */
+package enums;
+
 public enum RESPONSE_MDNS_TYPE {
 
 	RESPONSE_MULTICAST(false, 0), RESPONSE_UNICAST(true, 32768);

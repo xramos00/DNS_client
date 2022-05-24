@@ -1,9 +1,11 @@
-package ui;
 /*
- * Author - Martin Biolek
- * Link - https://github.com/mbio16/clientDNS
+ * Author - Patricia Ramosova
+ * Link - https://github.com/xramos00/DNS_client
+ * Based on work of Martin Biolek (https://github.com/mbio16/clientDNS)
  * Changed buttons for LLMNR and DoT, added button for load testing, added support for dark mode button and added file checking (rootservers, servers and load config)
  * */
+package ui;
+
 import java.awt.Desktop;
 import java.io.*;
 import java.lang.reflect.Field;

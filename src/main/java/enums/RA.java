@@ -1,8 +1,10 @@
-package enums;
 /*
- * Author - Martin Biolek
- * Link - https://github.com/mbio16/clientDNS
+ * Author - Patricia Ramosova
+ * Link - https://github.com/xramos00/DNS_client
+ * Based on work of Martin Biolek (https://github.com/mbio16/clientDNS)
  * */
+package enums;
+
 public enum RA {
 	RECURSION_AVAIBLE((boolean) true), RECURSION_NON_AVAIBLE((boolean) false);
 

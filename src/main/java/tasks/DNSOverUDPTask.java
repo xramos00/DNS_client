@@ -4,6 +4,7 @@ package tasks;
  * Link - https://github.com/xramos00/DNS_client
  * Methods used from Martin Biolek thesis are marked with comment
  * */
+import application.Config;
 import enums.APPLICATION_PROTOCOL;
 import enums.Q_COUNT;
 import enums.TRANSPORT_PROTOCOL;
@@ -12,6 +13,7 @@ import javafx.application.Platform;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
+import models.GeneralConfig;
 import models.Ip;
 import tasks.runnables.ProgressUpdateRunnable;
 import tasks.runnables.RequestResultsUpdateRunnable;
@@ -57,7 +59,7 @@ public class DNSOverUDPTask extends DNSTaskBase{
         boolean timeout = false;
         while (run) {
             try {
-                if (getMessagesSent() == DNSTaskBase.MAX_MESSAGES_SENT) {
+                if (getMessagesSent() == Config.getGeneralConfig().getMaxMessagesSent()) {
                     exc = new TimeoutException();
                     throw new TimeoutException();
                 }
@@ -79,7 +81,7 @@ public class DNSOverUDPTask extends DNSTaskBase{
                 e.printStackTrace();
                 LOGGER.warning("Time out for the: " + (getMessagesSent() + 1) + " message");
                 timeout = true;
-                if (getMessagesSent() == MAX_MESSAGES_SENT) {
+                if (getMessagesSent() == Config.getGeneralConfig().getMaxMessagesSent()) {
                     datagramSocket.close();
                 }
             } catch(InterruptedIOException e){

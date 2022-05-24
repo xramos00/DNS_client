@@ -1,9 +1,10 @@
-package models;
 /*
- * Author - Martin Biolek
- * Link - https://github.com/mbio16/clientDNS
- * TODO remove this file, no longer needed
+ * Author - Patricia Ramosova
+ * Link - https://github.com/xramos00/DNS_client
+ * Based on work of Martin Biolek (https://github.com/mbio16/clientDNS)
  * */
+package models;
+
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.BindException;

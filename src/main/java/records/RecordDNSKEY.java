@@ -1,8 +1,10 @@
-package records;
 /*
- * Author - Martin Biolek
- * Link - https://github.com/mbio16/clientDNS
+ * Author - Patricia Ramosova
+ * Link - https://github.com/xramos00/DNS_client
+ * Based on work of Martin Biolek (https://github.com/mbio16/clientDNS)
  * */
+package records;
+
 import org.json.simple.JSONObject;
 
 import enums.DNSSEC_ALGORITHM_TYPE;
