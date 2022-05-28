@@ -227,6 +227,7 @@
                                     <fileset dir="${basedir}" includes="rootservers.json"/>
                                     <fileset dir="${basedir}" includes="servers.json"/>
                                     <fileset dir="${basedir}" includes="LoadTestConfig.json"/>
+                                    <fileset dir="${basedir}" includes="GeneralConfig.json"/>
                                 </copy>
                             </target>
                         </configuration>
