@@ -8,8 +8,16 @@ import lombok.Data;
 
 @Data
 public class LoadTestConfig {
-    @JsonProperty(value = "duration")
-    private String duration;
+    @JsonProperty(value = "maxNumOfRequests")
+    private int maxNumOfRequests;
+    @JsonProperty(value = "minNumOfRequests")
+    private int minNumOfRequests;
+    @JsonProperty(value = "maxTimeBetweenRequests")
+    private int maxTimeBetweenRequests;
+    @JsonProperty(value = "minTimeBetweenRequests")
+    private int minTimeBetweenRequests;
+    @JsonProperty(value = "defaultNumberOfRequests")
+    private int defaultNumberOfRequests;
     @JsonProperty(value= "domain")
     private String domain;
     @JsonProperty(value= "record")
@@ -22,8 +30,8 @@ public class LoadTestConfig {
     private String protocol;
     @JsonProperty(value = "holdConnection")
     private boolean holdConnection;
-    @JsonProperty(value = "cooldown", defaultValue = "500")
-    private int cooldown;
+    @JsonProperty(value = "defaultTimeBetweenRequests")
+    private int defaultTimeBetweenRequests;
     @JsonProperty(value = "do")
     private boolean do_;
     @JsonProperty(value = "ad")
@@ -32,20 +40,28 @@ public class LoadTestConfig {
     private boolean cd;
 
     public LoadTestConfig(){
-        duration = "10";
+        maxNumOfRequests = 100;
+        minNumOfRequests = 1;
+        maxTimeBetweenRequests = 2000;
+        minTimeBetweenRequests = 10;
+        defaultNumberOfRequests = 10;
         domain = "seznam.cz;facebook.com";
         record = "A";
         ipv4 = true;
         recursive = true;
         protocol = "UDP";
         holdConnection = false;
-        cooldown = 500;
+        defaultTimeBetweenRequests = 500;
     }
 
-    public LoadTestConfig(String duration, String domain, String record, boolean ipv4,
-                          boolean recursive, String protocol, boolean holdConnection,
-                          boolean do_, boolean ad, boolean cd){
-        this.duration = duration;
+    public LoadTestConfig(int maxNumOfRequests, int minNumOfRequests, int maxTimeBetweenRequests, int minTimeBetweenRequests,
+                          int defaultNumberOfRequests, String domain, String record, boolean ipv4, boolean recursive,
+                          String protocol, boolean holdConnection, boolean do_, boolean ad, boolean cd){
+        this.maxNumOfRequests = maxNumOfRequests;
+        this.minNumOfRequests = minNumOfRequests;
+        this.maxTimeBetweenRequests = maxTimeBetweenRequests;
+        this.minTimeBetweenRequests = minTimeBetweenRequests;
+        this.defaultNumberOfRequests = defaultNumberOfRequests;
         this.domain = domain;
         this.record = record;
         this.ipv4 = ipv4;

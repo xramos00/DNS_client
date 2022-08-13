@@ -11,8 +11,10 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
+import javafx.stage.Modality;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import models.Ip;
 import models.Language;
 import models.Settings;
@@ -40,7 +42,6 @@ public class App extends Application {
 			this.language.changeLanguageBundle(true);
 			this.settings = new Settings();
 			Ip ip = new Ip();
-			//Config.loadConfiguration();
 			// detect screens and choose the right one, first option can be load from settings, second as fallback use primary screen
 			// to settings is saved hash of the screen and at the start of app all screens hash codes are compared if saved
 			// hash is equal to any screen
@@ -56,6 +57,7 @@ public class App extends Application {
 			settings.saveScreenHash(Integer.toString(screen.hashCode()));
 			FXMLLoader loader = new FXMLLoader(getClass().getResource(MAIN_STAGE_FXML_FILE),GeneralController.getLanguage().getLanguageBundle());
 			Stage newStage = new Stage();
+			newStage.initModality(Modality.NONE);
 			newStage.getIcons().add(new Image(ICON_URI));
 			newStage.setScene(new Scene((Parent) loader.load()));
 			newStage.setTitle(GeneralController.APP_TITTLE + " " + GeneralController.APP_TITTLE);

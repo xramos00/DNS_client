@@ -21,6 +21,7 @@ import enums.Q_COUNT;
 import enums.Q_TYPE;
 import javafx.scene.control.TreeItem;
 import records.*;
+import records.Record;
 
 @Data
 public class Response {

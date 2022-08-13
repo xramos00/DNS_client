@@ -72,7 +72,6 @@ public class DoHController extends GeneralController {
         isGetRadioButton.setTooltip(new Tooltip("GET"));
         customToggle.setToggleGroup(dnsserverToggleGroup);
         TextField input = new TextField();
-        //input.setPromptText(language.getLanguageBundle().getString("dnsServerDropDownLabel"));
         customToggle.setUserData(input);
         input.setOnMouseClicked(actionEvent -> {
             customToggle.setSelected(true);

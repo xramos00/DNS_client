@@ -30,7 +30,6 @@ import tasks.DNSTaskBase;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
-import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.net.UnknownHostException;
@@ -260,6 +259,7 @@ public abstract class GeneralController {
     @Translation
     protected MenuItem requestMenuItem;
 
+    @FXML
     @Translation
     protected MenuItem darkModeMenu;
 
@@ -328,8 +328,6 @@ public abstract class GeneralController {
             requestTreeView.setContextMenu(requestContextMenu);
         }
 
-
-        //savedDomainNamesChoiseBox.getItems().addAll(settings.getDomainNamesDNS());
     }
 
     public String getButtonText(){
@@ -443,7 +441,6 @@ public abstract class GeneralController {
      * Method creates basic wireshark filters and respective buttons in menu
      */
     protected void setWiresharkMenuItems() {
-        // wiresharkFilterToogleGroup = new ToggleGroup();
         parameters = new HashMap<String, String>();
         parameters.put("prefix", "ipv4");
         parameters.put("ip", null);
@@ -581,8 +578,12 @@ public abstract class GeneralController {
             while (e.hasMoreElements()) {
                 RadioMenuItem pom = new RadioMenuItem();
                 NetworkInterface ni = e.nextElement();
-                if (ni.getName().equals(settings.getNetInterface().getName())) {
+                if (settings.getNetInterface() == null) {
                     pom.setSelected(true);
+                } else {
+                    if (ni.getName().equals(settings.getNetInterface().getName())) {
+                        pom.setSelected(true);
+                    }
                 }
                 pom.setText(ni.getName() + " -- " + ni.getDisplayName());
                 pom.setUserData(ni);
@@ -605,7 +606,6 @@ public abstract class GeneralController {
      * */
     protected NetworkInterface getInterface() {
         NetworkInterface netInterface = (NetworkInterface) interfaceToggleGroup.getSelectedToggle().getUserData();
-        //LOGGER.info(netInterface.getDisplayName().toString() + " " + netInterface.getName());
         settings.setNetInterface(netInterface);
         return netInterface;
     }
@@ -933,10 +933,10 @@ public abstract class GeneralController {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(MainController.FXML_FILE_NAME), GeneralController.language.getLanguageBundle());
             Stage newStage = new Stage();
+            newStage.initModality(Modality.NONE);
             newStage.setScene(new Scene((Parent) loader.load()));
             GeneralController controller = (GeneralController) loader.getController();
             controller.setSettings(settings);
-            newStage.initModality(Modality.APPLICATION_MODAL);
 
             Stage oldStage = (Stage) sendButton.getScene().getWindow();
             newStage.setX(oldStage.getX());
@@ -955,7 +955,8 @@ public abstract class GeneralController {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            Alert alert = new Alert(Alert.AlertType.ERROR, GeneralController.language.getLanguageBundle().getString("windowError"));
+            //Alert alert = new Alert(Alert.AlertType.ERROR, GeneralController.language.getLanguageBundle().getString("windowError"));
+            Alert alert = new Alert(Alert.AlertType.ERROR, e.toString());
             alert.showAndWait();
         }
     }

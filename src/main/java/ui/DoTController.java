@@ -143,7 +143,6 @@ public class DoTController extends GeneralController {
         RadioButton customToggle = new RadioButton();
         customToggle.setToggleGroup(dnsserverToggleGroup);
         TextField input = new TextField();
-        //input.setPromptText(language.getLanguageBundle().getString("dnsServerDropDownLabel"));
         customToggle.setUserData(input);
         input.setOnMouseClicked(actionEvent -> {
             customToggle.setSelected(true);

@@ -5,14 +5,12 @@ package ui;
  * Some utility methods from Martin Biolek thesis are marked
  * */
 import application.Config;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import enums.APPLICATION_PROTOCOL;
 import enums.Q_COUNT;
 import enums.TRANSPORT_PROTOCOL;
 import exceptions.MoreRecordsTypesWithPTRException;
 import exceptions.NonRecordSelectedException;
 import exceptions.NotValidDomainNameException;
-import exceptions.NotValidIPException;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -34,8 +32,6 @@ import testing.Result;
 import testing.tasks.TesterTask;
 
 import java.io.UnsupportedEncodingException;
-import java.math.BigDecimal;
-import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -48,6 +44,7 @@ public class TesterController extends GeneralController {
     public static final String FXML_FILE_NAME = "/fxml/Tester.fxml";
 
     private ToggleGroup dnsProtocolToggleGroup;
+    private LoadTestConfig loadTestConfig = Config.getLoadTestConfig();
 
     @FXML
     private TableView<Result> resultsTableView;
@@ -155,11 +152,7 @@ public class TesterController extends GeneralController {
 
                     Result clickedRow = row.getItem();
                     System.out.println(clickedRow.getName()+" "+clickedRow.getDomain());
-                    /*String out = clickedRow.getResponses().stream().map(responses ->
-                            responses.stream().map(response -> response.getRdata().getDataAsString()).collect(Collectors.joining("\n"))).collect(Collectors.joining("\n========\n"));*/
-                    //Platform.runLater(()->showCustomAlert(out, Alert.AlertType.INFORMATION));
                     Platform.runLater(()->showAlertMultipleExceptions(clickedRow.getExceptions()));
-                    //Platform.runLater(()->showAlertMultipleExceptions(clickedRow.getExceptions()));
                 }
             });
             return row;
@@ -206,7 +199,6 @@ public class TesterController extends GeneralController {
             showAlert("dataCopied", Alert.AlertType.INFORMATION);
         });
 
-        //errorContextMenu.getItems().add(errorContextMenuItem);
         nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
         durationColumn.setCellValueFactory(new PropertyValueFactory<>("average"));
         domainColumn.setCellValueFactory(new PropertyValueFactory<>("domain"));
@@ -262,6 +254,16 @@ public class TesterController extends GeneralController {
             }
         });
 
+        cooldownTextField.textProperty().addListener(new ChangeListener<String>() {
+            @Override
+            public void changed(ObservableValue<? extends String> observable, String oldValue,
+                                String newValue) {
+                if (!newValue.matches("\\d*")) {
+                    numberOfRequests.setText(newValue.replaceAll("[^\\d]", ""));
+                }
+            }
+        });
+
         // if user clicks on DoH protocol button, non DoH servers are disabled
         dnsDohButton.setOnMouseClicked(mouseEvent -> enableDoHServers());
         // if user clicks on DNS over TCP or UDP, non DoH only servers are enabled
@@ -269,8 +271,7 @@ public class TesterController extends GeneralController {
         dnsTcpButton.setOnMouseClicked(mouseEvent -> enableDnsServers());
         dnsDotButton.setOnMouseClicked(mouseEvent -> enableDoTServers());
 
-        LoadTestConfig loadTestConfig = Config.getLoadTestConfig();
-        numberOfRequests.setText(loadTestConfig.getDuration());
+        numberOfRequests.setText(Long.toString(loadTestConfig.getDefaultNumberOfRequests()));
         IPv4RadioButton.setSelected(loadTestConfig.isIpv4());
         IPv6RadioButton.setSelected(!loadTestConfig.isIpv4());
         if (IPv6RadioButton.isSelected()) {
@@ -314,28 +315,36 @@ public class TesterController extends GeneralController {
         DNSSECOkCheckBox.setSelected(loadTestConfig.isDo_());
         checkingDisabledCheckBox.setSelected(loadTestConfig.isCd());
         authenticateDataCheckBox.setSelected(loadTestConfig.isAd());
-        cooldownTextField.setText(Integer.toString(Config.getLoadTestConfig().getCooldown()));
+        cooldownTextField.setText(Integer.toString(Config.getLoadTestConfig().getDefaultTimeBetweenRequests()));
+        cooldownTextField.setTooltip(new Tooltip("Min: " + loadTestConfig.getMinTimeBetweenRequests() + "\n" + "Max: " + loadTestConfig.getMaxTimeBetweenRequests()));
+        numberOfRequests.setTooltip(new Tooltip("Min: " + loadTestConfig.getMinNumOfRequests() + "\n" + "Max: "+ loadTestConfig.getMaxNumOfRequests()));
 
         numberOfRequests.textProperty().addListener((observable, oldValue, newValue) -> {
             try{
-                if (!numberOfRequests.equals("") && Long.parseLong(newValue) <= 1000000 && Long.parseLong(newValue) > 0) {
+                if (!numberOfRequests.equals("") && Long.parseLong(newValue) <= loadTestConfig.getMaxNumOfRequests() && Long.parseLong(newValue) >= loadTestConfig.getMinNumOfRequests()) {
                     numberOfRequests.setText(newValue);
+                    numberOfRequests.setStyle("");
                 } else {
-                    numberOfRequests.setText(oldValue);
+                    numberOfRequests.setStyle("  -fx-text-box-border: red ;\n" +
+                            "  -fx-focus-color: red ;");
                 }
             } catch (NumberFormatException e){
-                numberOfRequests.setText("1");
+                numberOfRequests.setStyle("  -fx-text-box-border: red ;\n" +
+                        "  -fx-focus-color: red ;");
             }
         });
         cooldownTextField.textProperty().addListener((observable, oldValue, newValue) -> {
             try{
-                if (!cooldownTextField.equals("") && Long.parseLong(newValue) <= 1000000 && Long.parseLong(newValue) >= 10) {
+                if (Long.parseLong(newValue) <= loadTestConfig.getMaxTimeBetweenRequests() && Long.parseLong(newValue) >= loadTestConfig.getMinTimeBetweenRequests()) {
                     cooldownTextField.setText(newValue);
+                    cooldownTextField.setStyle("");
                 } else {
-                    cooldownTextField.setText(oldValue);
+                    cooldownTextField.setStyle("  -fx-text-box-border: red ;\n" +
+                            "  -fx-focus-color: red ;");
                 }
             } catch (NumberFormatException e){
-                cooldownTextField.setText("1");
+                cooldownTextField.setStyle("  -fx-text-box-border: red ;\n" +
+                                "  -fx-focus-color: red ;");
             }
         });
 
@@ -468,12 +477,29 @@ public class TesterController extends GeneralController {
             boolean adFlag = authenticateDataCheckBox.isSelected();
             boolean cdFlag = checkingDisabledCheckBox.isSelected();
             boolean recursive = recursiveQueryRadioButton.isSelected();
-            long cooldown = Integer.parseInt(cooldownTextField.getText());
-            long duration = Long.parseLong(numberOfRequests.getText());
-            // check user input on number of requests
-            duration = Math.min(duration, 1000000);
-            duration = Math.max(duration, 1);
+            long cooldown;
+            try {
+                cooldown = Integer.parseInt(cooldownTextField.getText());
+                cooldown = Math.min(cooldown, loadTestConfig.getMaxTimeBetweenRequests());
+                cooldown = Math.max(cooldown, loadTestConfig.getMinTimeBetweenRequests());
+
+            } catch (NumberFormatException e){
+                cooldown = loadTestConfig.getDefaultTimeBetweenRequests();
+            }
+            cooldownTextField.setText(Long.toString(cooldown));
+            cooldownTextField.setStyle("");
+            long duration;
+            try{
+                duration = Integer.parseInt(numberOfRequests.getText());
+                duration = Math.min(duration, loadTestConfig.getMaxNumOfRequests());
+                duration = Math.max(duration, loadTestConfig.getMinNumOfRequests());
+            } catch (NumberFormatException e){
+                duration = loadTestConfig.getDefaultNumberOfRequests();
+            }
+            numberOfRequests.setStyle("");
             numberOfRequests.setText(Long.toString(duration));
+            // check user input on number of requests
+
             boolean isIPv4 = IPv4RadioButton.isSelected();
             Q_COUNT[] records = getRecordTypes();
             boolean holdConnection = holdConnectionCheckbox.isSelected();
@@ -520,7 +546,6 @@ public class TesterController extends GeneralController {
             // start progress bar and start tester task
             Platform.runLater(()->progressBar.setProgress(ProgressIndicator.INDETERMINATE_PROGRESS));
             Task<Void> task = new TesterTask(recursive, adFlag, cdFlag, doFlag, holdConnection, domain, records, transport_protocol, application_protocol, getInterface(), (int)duration, results, cooldown, this);
-            //DNSTaskBase dnsTask = new TcpTester(false,adFlag,cdFlag,doFlag,holdConnection,domain,records, TRANSPORT_PROTOCOL.TCP, APPLICATION_PROTOCOL.DNS,"")
             resultsTableView.setItems(observableList);
             thread = new Thread(task);
             LOGGER.info("Starting main mass testing task");

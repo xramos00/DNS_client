@@ -100,12 +100,18 @@ public class MainController extends GeneralController
         //
         LOGGER = Logger.getLogger(DNSController.class.getName());
 
-        // setup toogle group
+        // setup toggle group
         languagegroup = new ToggleGroup();
         czechLangRadioButton.setToggleGroup(languagegroup);
         englishLangRadioButton.setToggleGroup(languagegroup);
         PROTOCOL = "DNS";
-        czechLangRadioButton.setSelected(true);
+        englishLangRadioButton.setSelected(true);
+        GeneralController.language.changeLanguageBundle(false);
+        if (Locale.getDefault().toString().equals("sk_SK") || Locale.getDefault().toString().equals("cz_CZ")) {
+            czechLangRadioButton.setSelected(true);
+            GeneralController.language.changeLanguageBundle(true);
+        }
+        translateUI();
     }
 
 
@@ -136,7 +142,7 @@ public class MainController extends GeneralController
             controller.setLabels();
             controller.loadDataFromSettings();
             controller.networkInterfaces();
-            // added supporst for dark mode
+            // added support for dark mode
             if(GeneralController.darkMode){
                 controller.setDarkMode();
             } else {
@@ -150,7 +156,8 @@ public class MainController extends GeneralController
         {
             e.printStackTrace();
             LOGGER.severe("Could not open new window:" + e.toString());
-            Alert alert = new Alert(AlertType.ERROR, GeneralController.language.getLanguageBundle().getString("windowError"));
+            //Alert alert = new Alert(AlertType.ERROR, GeneralController.language.getLanguageBundle().getString("windowError"));
+            Alert alert = new Alert(AlertType.ERROR, e.toString());
             alert.showAndWait();
         }
     }

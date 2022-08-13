@@ -50,7 +50,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox fx:id="vboxRoot" prefHeight="480.0" prefWidth="640.0" xmlns="http://javafx.com/javafx/15" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ui.LLMNRController">
+<VBox fx:id="vboxRoot" prefHeight="480.0" prefWidth="640.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ui.LLMNRController">
   <children>
     <MenuBar VBox.vgrow="NEVER">
       <menus>
@@ -72,7 +72,7 @@
         </Menu>
             <Menu fx:id="wiresharkMenu" mnemonicParsing="false" text="Wireshark" />
             <Menu fx:id="interfaceMenu" mnemonicParsing="false" text="%interfaceMenu" />
-            <Menu mnemonicParsing="false" text="%darkModeMenu">
+            <Menu fx:id="darkModeMenu" mnemonicParsing="false" text="%darkModeMenu">
                <items>
                   <RadioMenuItem fx:id="darkModeMenuItem" mnemonicParsing="false" text="%darkModeMenuItem" />
                </items>

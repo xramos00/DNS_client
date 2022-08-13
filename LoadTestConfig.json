@@ -1,12 +1,16 @@
 {
-  "duration": "3",
+  "minTimeBetweenRequests": 10,
+  "maxTimeBetweenRequests": 2000,
+  "defaultTimeBetweenRequests": 500,
+  "minNumOfRequests": 1,
+  "maxNumOfRequests": 100,
+  "defaultNumberOfRequests": 3,
   "domain": "idnes.cz;bbc.com",
   "record": "A",
   "ipv4": true,
   "recursive": true,
   "protocol": "UDP",
   "holdConnection": false,
-  "cooldown": 500,
   "do": false,
   "ad": false,
   "cd": false
