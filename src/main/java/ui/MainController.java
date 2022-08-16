@@ -107,7 +107,7 @@ public class MainController extends GeneralController
         PROTOCOL = "DNS";
         englishLangRadioButton.setSelected(true);
         GeneralController.language.changeLanguageBundle(false);
-        if (Locale.getDefault().toString().equals("sk_SK") || Locale.getDefault().toString().equals("cz_CZ")) {
+        if (Locale.getDefault().toString().equals("sk_SK") || Locale.getDefault().toString().equals("cs_CZ")) {
             czechLangRadioButton.setSelected(true);
             GeneralController.language.changeLanguageBundle(true);
         }
